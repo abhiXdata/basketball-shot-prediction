@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basket Ball Shot Prediction</title>
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, sans-serif;
+        }
+
+        body{
+          background-image: url('static/images/kobe-bryant.png');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          min-height: 100vh;
+          padding: 30px;
+          overflow-x:hidden;
+}
+
+        .container{
+    width:45%;
+    max-width:900px;
+    margin-left:50px;
+    background:rgba(255,255,255,0.95);
+    border-radius:15px;
+    padding:30px;
+    box-shadow:0px 0px 20px rgba(0,0,0,0.3);
+}
+        @media screen and (max-width: 768px){
+
+    body{
+        padding:15px;
+    }
+
+    .container{
+        width:100%;
+        margin-left:0;
+        padding:20px;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+}
+*{
+    box-sizing:border-box;
+}
+
+
+        h1{
+            text-align:center;
+            color:#552583;
+            margin-bottom:10px;
+        }
+
+        .subtitle{
+            text-align:center;
+            color:#666;
+            margin-bottom:30px;
+        }
+
+        .form-grid{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:20px;
+        }
+
+        .field{
+            display:flex;
+            flex-direction:column;
+        }
+
+        label{
+            font-weight:bold;
+            margin-bottom:5px;
+            color:#333;
+        }
+
+        input, select{
+            padding:10px;
+            border:1px solid #ccc;
+            border-radius:8px;
+            font-size:15px;
+        }
+
+        input:focus, select:focus{
+            outline:none;
+            border-color:#552583;
+        }
+
+        .full-width{
+            grid-column:1 / span 2;
+        }
+
+        button{
+            width:100%;
+            padding:15px;
+            background:#552583;
+            color:white;
+            border:none;
+            border-radius:8px;
+            font-size:18px;
+            font-weight:bold;
+            cursor:pointer;
+            margin-top:20px;
+        }
+
+        button:hover{
+            background:#401d63;
+        }
+
+        .result{
+            margin-top:25px;
+            text-align:center;
+            font-size:24px;
+            font-weight:bold;
+            color:green;
+        }
+
+        .note{
+            background:#f8f8f8;
+            padding:15px;
+            border-left:5px solid #FDB927;
+            margin-bottom:25px;
+            border-radius:5px;
+        }
+
+        @media(max-width:768px){
+            .form-grid{
+                grid-template-columns:1fr;
+            }
+
+            .full-width{
+                grid-column:auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🏀 Basket Ball Shot Prediction</h1>
+
+    <p class="subtitle">
+        Predict whether player's shot will be Made or Missed
+    </p>
+
+    <div class="note">
+        Fill in the shot details below and click Predict.
+    </div>
+    <div class="result">
+        {{ prediction_text }}
+        <br><br>
+    </div>
+
+    <form action="/predict" method="POST">
+
+        <div class="form-grid">
+
+            <div class="field">
+                <label>Action Type</label>
+                <select name="action_type">
+<option value="0">Alley Oop Dunk Shot</option>
+<option value="1">Alley Oop Layup Shot</option>
+<option value="2">Cutting Layup Shot</option>
+<option value="3">Driving Bank Shot</option>
+<option value="4">Driving Dunk Shot</option>
+<option value="10">Driving Jump Shot</option>
+<option value="11">Driving Layup Shot</option>
+<option value="14">Dunk Shot</option>
+<option value="16">Fadeaway Jump Shot</option>
+<option value="22">Hook Shot</option>
+<option value="25">Jump Shot</option>
+<option value="26">Layup Shot</option>
+<option value="28">Pullup Jump Shot</option>
+<option value="40">Running Jump Shot</option>
+<option value="41">Running Layup Shot</option>
+<option value="46">Slam Dunk Shot</option>
+<option value="47">Step Back Jump Shot</option>
+<option value="54">Turnaround Jump Shot</option>
+</select>
+            </div>
+
+            <div class="field">
+                <label>Combined Shot Type</label>
+                <select name="combined_shot_type">
+<option value="0">Bank Shot</option>
+<option value="1">Dunk</option>
+<option value="2">Hook Shot</option>
+<option value="3">Jump Shot</option>
+<option value="4">Layup</option>
+<option value="5">Tip Shot</option>
+</select>
+            </div>
+
+            <div class="field">
+                <label>Location X</label>
+                <input type="number" name="loc_x" value="5">
+            </div>
+
+            <div class="field">
+                <label>Location Y</label>
+                <input type="number" name="loc_y" value="120">
+            </div>
+
+            <div class="field">
+                <label>Quarter</label>
+                <select name="period">
+                    <option value="1">1st Quarter</option>
+                    <option value="2">2nd Quarter</option>
+                    <option value="3">3rd Quarter</option>
+                    <option value="4">4th Quarter</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Game Type</label>
+                <select name="playoffs">
+                    <option value="0">Regular Season</option>
+                    <option value="1">Playoffs</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Season</label>
+                <select name="season">
+<option value="0">1996-97</option>
+<option value="1">1997-98</option>
+<option value="2">1998-99</option>
+<option value="3">1999-00</option>
+<option value="4">2000-01</option>
+<option value="5">2001-02</option>
+<option value="6">2002-03</option>
+<option value="7">2003-04</option>
+<option value="8">2004-05</option>
+<option value="9">2005-06</option>
+<option value="10">2006-07</option>
+<option value="11">2007-08</option>
+<option value="12">2008-09</option>
+<option value="13">2009-10</option>
+<option value="14">2010-11</option>
+<option value="15">2011-12</option>
+<option value="16">2012-13</option>
+<option value="17">2013-14</option>
+<option value="18">2014-15</option>
+<option value="19">2015-16</option>
+</select>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Shot Distance (Feet)</label>
+                <input type="number" name="shot_distance" value="15">
+            </div>
+
+            <div class="field">
+                <label>Shot Type</label>
+                <select name="shot_type">
+<option value="0">2PT Field Goal</option>
+<option value="1">3PT Field Goal</option>
+</select>
+            </div>
+
+            <div class="field">
+                <label>Shot Zone Area</label>
+                <select name="shot_zone_area">
+<option value="0">Back Court (BC)</option>
+<option value="1">Center (C)</option>
+<option value="2">Left Side Center (LC)</option>
+<option value="3">Left Side (L)</option>
+<option value="4">Right Side Center (RC)</option>
+<option value="5">Right Side (R)</option>
+</select>
+            </div>
+
+            <div class="field">
+                <label>Shot Zone Basic</label>
+                <select name="shot_zone_basic">
+<option value="0">Above the Break 3</option>
+<option value="1">Backcourt</option>
+<option value="2">In The Paint (Non-RA)</option>
+<option value="3">Left Corner 3</option>
+<option value="4">Mid-Range</option>
+<option value="5">Restricted Area</option>
+<option value="6">Right Corner 3</option>
+</select>
+            </div>
+
+            <div class="field">
+                <label>Shot Zone Range</label>
+                <select name="shot_zone_range">
+<option value="0">16-24 ft.</option>
+<option value="1">24+ ft.</option>
+<option value="2">8-16 ft.</option>
+<option value="3">Back Court Shot</option>
+<option value="4">Less Than 8 ft.</option>
+</select>
+            </div>
+
+            <div class="field">
+                <label>Matchup (Encoded Value)</label>
+                <input type="number" name="matchup" value="25">
+            </div>
+
+            <div class="field">
+                <label>Opponent</label>
+                <select name="opponent">
+                    <option value="0">ATL</option>
+                    <option value="1">BKN</option>
+                    <option value="2">BOS</option>
+                    <option value="3">CHA</option>
+                    <option value="4">CHI</option>
+                    <option value="5">CLE</option>
+                    <option value="6">DAL</option>
+                    <option value="7">DEN</option>
+                    <option value="8">DET</option>
+                    <option value="9">GSW</option>
+                    <option value="10">HOU</option>
+                    <option value="11">IND</option>
+                    <option value="12">LAC</option>
+                    <option value="13">MEM</option>
+                    <option value="14">MIA</option>
+                    <option value="15">MIL</option>
+                    <option value="16">MIN</option>
+                    <option value="17">NJN</option>
+                    <option value="18">NOH</option>
+                    <option value="19">NOP</option>
+                    <option value="20">NYK</option>
+                    <option value="21">OKC</option>
+                    <option value="22">ORL</option>
+                    <option value="23">PHI</option>
+                    <option value="24">PHX</option>
+                    <option value="25">POR</option>
+                    <option value="26">SAC</option>
+                    <option value="27">SAS</option>
+                    <option value="28">SEA</option>
+                    <option value="29">TOR</option>
+                    <option value="30">UTA</option>
+                    <option value="31">VAN</option>
+                    <option value="32">WAS</option>
+                </select>
+            </div>
+
+            <div class="field full-width">
+                <label>Time Remaining (Seconds)</label>
+                <input type="number" name="time_remaining" value="320">
+            </div>
+
+        </div>
+
+        <button type="submit">
+            Predict Shot Outcome
+        </button>
+
+    </form>
+
+    
+
+</div>
+
+</body>
+</html>
