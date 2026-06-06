@@ -1,18 +1,40 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 import numpy as np
 import pickle
+import time
 
 app = Flask(__name__)
+app.secret_key = 'your-secret-key-here-change-this-in-production'  # Required for sessions
 
 # Load trained model
 model = pickle.load(open('model.pkl', 'rb'))
 
 @app.route('/')
 def index():
-    """Check if model is loaded and redirect accordingly"""
-    if model is None:
+    """Check if model is loaded and redirect accordingly with loading UI"""
+    # Check if this session has seen the loading screen
+    if not session.get('loading_complete', False):
+        # First time in this session - show loading screen
         return render_template('loading.html')
+    
+    # Loading already shown in this session - show main app
     return render_template('index.html')
+
+@app.route('/api/initialize', methods=['GET'])
+def initialize():
+    """Mark loading as complete and return status"""
+    # Mark this session as having completed loading
+    session['loading_complete'] = True
+    
+    # Optional: Add a small delay to make loading screen visible
+    # Remove this in production if you don't want the delay
+    time.sleep(0.5)
+    
+    return {
+        'status': 'success',
+        'message': 'Loading complete',
+        'ready': True
+    }
 
 @app.route('/predict', methods=['POST'])
 def predict():
