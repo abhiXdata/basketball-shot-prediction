@@ -159,7 +159,9 @@
             "🏀 The NBA's all-time scoring leader is LeBron James.",
             "📈 The most points scored in a single game is 100 by Wilt Chamberlain.",
             "🎪 The basketball hoop is 10 feet high.",
-            "⏰ Games consist of four 12-minute quarters in the NBA."
+            "⏰ Games consist of four 12-minute quarters in the NBA.",
+            "🎯 Career free throw percentage leader is Stephen Curry at 90.8%",
+            "🏆 The Chicago Bulls had a 72-10 season in 1995-96"
         ];
         
         let progress = 0;
@@ -173,12 +175,13 @@
             'Loading prediction model...',
             'Analyzing shot patterns...',
             'Calibrating shooting metrics...',
+            'Loading player statistics...',
             'Ready to predict your shots!'
         ];
         
         // Show random basketball facts
         function showRandomFact() {
-            factIndex = (factIndex + 1) % basketballFacts.length;
+            factIndex = Math.floor(Math.random() * basketballFacts.length);
             factText.textContent = basketballFacts[factIndex];
             factText.style.opacity = '1';
         }
@@ -188,6 +191,8 @@
         setInterval(showRandomFact, 3500);
         
         async function initialize() {
+            console.log("Loading screen started - initializing...");
+            
             // Animate progress bar
             const progressInterval = setInterval(() => {
                 if (progress < 90) {
@@ -195,14 +200,17 @@
                     progress = Math.min(progress, 90);
                     progressBar.style.width = progress + '%';
                     
-                    const messageIndex = Math.min(Math.floor(progress / 25), statusMessages.length - 1);
+                    const messageIndex = Math.min(Math.floor(progress / 20), statusMessages.length - 1);
                     statusText.textContent = statusMessages[messageIndex];
                 }
             }, 200);
             
             try {
-                // Call the initialization endpoint
-                const response = await fetch('/api/initialize', {
+                // Simulate loading time (remove or adjust as needed)
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Call the initialization endpoint (optional)
+                await fetch('/api/initialize', {
                     method: 'GET',
                     headers: {
                         'Cache-Control': 'no-cache',
@@ -210,28 +218,23 @@
                     }
                 });
                 
-                const data = await response.json();
-                
                 clearInterval(progressInterval);
                 
-                if (data.status === 'success') {
-                    // Complete the progress bar
-                    progressBar.style.width = '100%';
-                    statusText.textContent = 'Ready! Redirecting...';
-                    
-                    // Wait a moment to show completion
-                    await new Promise(resolve => setTimeout(resolve, 800));
-                    
-                    // Fade out loading screen
-                    loadingContainer.classList.add('fade-out');
-                    
-                    // Redirect to main application
-                    setTimeout(() => {
-                        window.location.href = '/';
-                    }, 500);
-                } else {
-                    throw new Error(data.message);
-                }
+                // Complete the progress bar
+                progressBar.style.width = '100%';
+                statusText.textContent = 'Ready! Redirecting...';
+                
+                // Wait a moment to show completion
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                // Fade out loading screen
+                loadingContainer.classList.add('fade-out');
+                
+                // Redirect to main application with loaded parameter
+                setTimeout(() => {
+                    window.location.href = '/?loaded=true';
+                }, 500);
+                
             } catch (error) {
                 clearInterval(progressInterval);
                 console.error('Initialization error:', error);
@@ -249,10 +252,19 @@
             }
         }
         
+        // Prevent back/forward cache from skipping loading screen
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                console.log('Page restored from cache, reloading to show loading screen');
+                window.location.reload();
+            }
+        });
+        
         // Start initialization when page loads
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initialize);
         } else {
+            console.log('Document already loaded, running initialization immediately');
             initialize();
         }
     </script>
