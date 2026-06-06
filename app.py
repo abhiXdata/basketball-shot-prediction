@@ -20,6 +20,12 @@ def index():
     # Loading already shown in this session - show main app
     return render_template('index.html')
 
+@app.route('/favicon.ico')
+def favicon():
+    """Return favicon to prevent 404 errors"""
+    # Return empty response with no icon
+    return '', 204  # 204 = No Content, prevents browser from retrying
+
 @app.route('/api/initialize', methods=['GET'])
 def initialize():
     """Mark loading as complete and return status"""
