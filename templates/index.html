@@ -5,7 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Basket Ball Shot Prediction</title>
-
+    <script>
+    // Prevent back button from showing loading screen again unnecessarily
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            // Page was loaded from cache
+            console.log('Page restored from cache');
+        }
+    });
+</script>
     <style>
         *{
             margin:0;
