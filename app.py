@@ -1,43 +1,38 @@
-from flask import Flask, render_template, request, session, send_from_directory
+from flask import Flask, render_template, request, send_from_directory
 import numpy as np
 import pickle
 import time
 import os
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-here-change-this-in-production'
 
 # Load trained model
 model = pickle.load(open('model.pkl', 'rb'))
 
+# Global flag to track if loading has been shown
+loading_shown = False
+
 @app.route('/favicon.ico')
 def favicon():
-    """Serve favicon to prevent 404 errors"""
-    return send_from_directory(
-        os.path.join(app.root_path, 'static'),
-        'favicon.svg',
-        mimetype='image/svg+xml'
-    )
+    """Return empty response for favicon to prevent 404 errors"""
+    return '', 204
 
-# Rest of your routes remain the same...
 @app.route('/')
 def index():
-    if not session.get('loading_complete', False):
+    """Always show loading screen, then redirect to main app"""
+    # Get parameter to check if this is after loading
+    loaded = request.args.get('loaded', 'false')
+    
+    if loaded == 'true':
+        # This is after loading screen, show main app
+        return render_template('index.html')
+    else:
+        # First visit or refresh - show loading screen
         return render_template('loading.html')
-    return render_template('index.html')
 
 @app.route('/api/initialize', methods=['GET'])
 def initialize():
-    session['loading_complete'] = True
-    time.sleep(0.5)
-    return {
-        'status': 'success',
-        'message': 'Loading complete',
-        'ready': True
-    }
-
-# ... rest of your predict function remains unchanged
-    
+    """Mark initialization as complete"""
     return {
         'status': 'success',
         'message': 'Loading complete',
@@ -46,9 +41,7 @@ def initialize():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-
     try:
-
         print("FORM DATA:", request.form)
 
         features = [[
@@ -84,7 +77,6 @@ def predict():
 
     except Exception as e:
         print("ERROR OCCURRED:", str(e))
-
         return render_template(
             'index.html',
             prediction_text=f"Error: {str(e)}"
