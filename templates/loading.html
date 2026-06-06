@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading - Basketball Shot Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .loading-container {
+            text-align: center;
+            color: white;
+        }
+
+        .basketball-loader {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 30px;
+            position: relative;
+            animation: bounce 0.8s infinite ease-in-out;
+        }
+
+        .basketball {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle at 30% 30%, #FF6B35, #D44918);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .basketball::before,
+        .basketball::after {
+            content: '';
+            position: absolute;
+            background-color: #2C1810;
+            border-radius: 50%;
+        }
+
+        .basketball::before {
+            width: 100%;
+            height: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .basketball::after {
+            width: 6px;
+            height: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .loading-text {
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .progress-bar-container {
+            width: 300px;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #FF6B35;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .status-text {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .fade-out {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-container" id="loadingContainer">
+        <div class="basketball-loader">
+            <div class="basketball"></div>
+        </div>
+        <div class="loading-text">Initializing Shot Predictor</div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="status-text" id="statusText">Loading model...</div>
+    </div>
+
+    <script>
+        let progress = 0;
+        const progressBar = document.getElementById('progressBar');
+        const statusText = document.getElementById('statusText');
+        const loadingContainer = document.getElementById('loadingContainer');
+        
+        const statusMessages = [
+            'Loading model...',
+            'Initializing neural networks...',
+            'Calibrating shot trajectory...',
+            'Analyzing basketball physics...',
+            'Ready to predict!'
+        ];
+        
+        async function initialize() {
+            // Simulate progress while initializing
+            const progressInterval = setInterval(() => {
+                if (progress < 90) {
+                    progress += Math.random() * 10;
+                    progress = Math.min(progress, 90);
+                    progressBar.style.width = progress + '%';
+                    
+                    const messageIndex = Math.floor(progress / 20);
+                    if (messageIndex < statusMessages.length) {
+                        statusText.textContent = statusMessages[messageIndex];
+                    }
+                }
+            }, 200);
+            
+            try {
+                // Make API call to initialize the model
+                const response = await fetch('/api/initialize');
+                const data = await response.json();
+                
+                clearInterval(progressInterval);
+                
+                if (data.status === 'success') {
+                    progressBar.style.width = '100%';
+                    statusText.textContent = 'Complete! Redirecting...';
+                    
+                    // Fade out loading screen
+                    setTimeout(() => {
+                        loadingContainer.classList.add('fade-out');
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 500);
+                    }, 500);
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                clearInterval(progressInterval);
+                statusText.textContent = 'Error loading model. Please refresh the page.';
+                statusText.style.color = '#ff6b6b';
+                console.error('Initialization error:', error);
+            }
+        }
+        
+        // Start initialization when page loads
+        window.addEventListener('load', initialize);
+    </script>
+</body>
+</html>
