@@ -460,7 +460,7 @@
     
     let isReady = false;
     let attempts = 0;
-    const maxAttempts = 60; // 60 seconds max wait
+    const maxAttempts = 10; // 60 seconds max wait
     
     while (!isReady && attempts < maxAttempts) {
         console.log(`Attempt ${attempts + 1}: Checking model status...`);
