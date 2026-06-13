@@ -759,146 +759,122 @@
     </div>
 
     <script>
-        // Create floating particles
-        function createParticles() {
-            const particleCount = 40;
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                const size = Math.random() * 5 + 2;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.animationDuration = `${Math.random() * 15 + 10}s`;
-                particle.style.animationDelay = `${Math.random() * 5}s`;
-                document.body.appendChild(particle);
-            }
+    // Create floating particles
+    function createParticles() {
+        const particleCount = 40;
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            const size = Math.random() * 5 + 2;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.animationDuration = `${Math.random() * 15 + 10}s`;
+            particle.style.animationDelay = `${Math.random() * 5}s`;
+            document.body.appendChild(particle);
         }
-
-        const formCard = document.getElementById('formCard');
-        const resultCard = document.getElementById('resultCard');
-        const predictionForm = document.getElementById('predictionForm');
-        const predictBtn = document.getElementById('predictBtn');
-        const backBtn = document.getElementById('backBtn');
-        const resultContent = document.getElementById('resultContent');
-
-        // Handle form submission
-       // Handle form submission
-predictionForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    // Hide form card, show loading in result card
-    formCard.classList.add('hide');
-    resultCard.classList.add('show');
-    
-    // Show loading state
-    resultContent.innerHTML = `
-        <div class="loading-spinner">
-            <div class="basketball-emoji">🏀</div>
-            <h3 style="margin-top: 20px; color: #333;">Analyzing Shot...</h3>
-            <p style="color: #666; margin-top: 10px;">Processing your shot parameters</p>
-        </div>
-    `;
-    
-    // Collect form data
-    const formData = new FormData(predictionForm);
-    
-    try {
-        const response = await fetch('/predict', {
-            method: 'POST',
-            body: formData
-        });
-        
-        const html = await response.text();
-        
-        // Create a temporary DOM element to parse the HTML
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        
-        // Try to find the prediction text from the result div
-        let predictionText = '';
-        let confidenceText = '';
-        
-        // Look for the result div (from your app.py)
-        const resultDiv = doc.querySelector('.result');
-        if (resultDiv) {
-            predictionText = resultDiv.textContent.trim();
-        } else {
-            // Fallback: look for any text containing Shot Made or Shot Missed
-            const bodyText = doc.body.textContent;
-            if (bodyText.includes('Shot Made')) {
-                const match = bodyText.match(/Shot Made[^|]*/);
-                predictionText = match ? match[0].trim() : 'Shot Made';
-            } else if (bodyText.includes('Shot Missed')) {
-                const match = bodyText.match(/Shot Missed[^|]*/);
-                predictionText = match ? match[0].trim() : 'Shot Missed';
-            } else {
-                predictionText = bodyText.substring(0, 200);
-            }
-        }
-        
-        // Clean up the prediction text
-        predictionText = predictionText.replace(/\s+/g, ' ').trim();
-        
-        // Check if it's a make or miss
-        const isMade = predictionText.includes('Made') || predictionText.includes('🏀');
-        
-        // Extract confidence if present (looks for percentage like 85%)
-        const confidenceMatch = predictionText.match(/(\d+\.?\d*%)/);
-        const confidence = confidenceMatch ? confidenceMatch[0] : '';
-        
-        // Format the display text
-        let displayText = predictionText;
-        if (!displayText.includes('Confidence') && confidence) {
-            displayText = `${displayText} | Confidence: ${confidence}`;
-        }
-        
-        resultContent.innerHTML = `
-            <div class="prediction-result ${isMade ? 'make' : 'miss'}">
-                <div class="prediction-text">${isMade ? '🏆 SHOT MADE! 🏆' : '💔 SHOT MISSED 💔'}</div>
-                <div class="confidence">${displayText}</div>
-            </div>
-            <div class="shot-visual">
-                <div class="basketball-emoji">🏀</div>
-            </div>
-        `;
-        
-        // Trigger animation
-        const basketball = resultContent.querySelector('.basketball-emoji');
-        if (basketball) {
-            basketball.style.animation = 'none';
-            setTimeout(() => {
-                basketball.style.animation = 'bounce 1s ease-in-out';
-            }, 10);
-        }
-        
-    } catch (error) {
-        console.error('Error:', error);
-        resultContent.innerHTML = `
-            <div class="prediction-result miss">
-                <div class="prediction-text">⚠️ ERROR</div>
-                <div class="confidence">Failed to get prediction. Please try again.</div>
-            </div>
-            <div class="shot-visual">
-                <div class="basketball-emoji">🏀</div>
-            </div>
-        `;
     }
-});
+
+    const formCard = document.getElementById('formCard');
+    const resultCard = document.getElementById('resultCard');
+    const predictionForm = document.getElementById('predictionForm');
+    const predictBtn = document.getElementById('predictBtn');
+    const backBtn = document.getElementById('backBtn');
+    const resultContent = document.getElementById('resultContent');
+
+    // Handle form submission with AJAX
+    predictionForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
         
-        // Back button functionality
-        backBtn.addEventListener('click', function() {
-            resultCard.classList.remove('show');
-            formCard.classList.remove('hide');
-        });
+        // Hide form card, show loading in result card
+        formCard.classList.add('hide');
+        resultCard.classList.add('show');
         
-        // Create background particles
-        createParticles();
+        // Show loading state
+        resultContent.innerHTML = `
+            <div class="loading-spinner">
+                <div class="basketball-emoji">🏀</div>
+                <h3 style="margin-top: 20px; color: #333;">Analyzing Shot...</h3>
+                <p style="color: #666; margin-top: 10px;">Processing your shot parameters</p>
+            </div>
+        `;
         
-        // Log successful load
-        console.log("✅ Basketball Shot Predictor UI Loaded Successfully!");
-        console.log("🎯 Kobe Bryant full background active");
-        console.log("📊 Scroll only on form grid, not on body");
-    </script>
-</body>
+        // Collect form data
+        const formData = new FormData(predictionForm);
+        
+        try {
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Display result based on JSON response
+                const isMade = data.is_made;
+                const confidence = data.confidence;
+                const result = data.result;
+                
+                resultContent.innerHTML = `
+                    <div class="prediction-result ${isMade ? 'make' : 'miss'}">
+                        <div class="prediction-text">${isMade ? '🏆 SHOT MADE! 🏆' : '💔 SHOT MISSED 💔'}</div>
+                        <div class="confidence">🏀 ${result} | Confidence: ${confidence}%</div>
+                    </div>
+                    <div class="shot-visual">
+                        <div class="basketball-emoji">🏀</div>
+                    </div>
+                `;
+            } else if (data.error) {
+                resultContent.innerHTML = `
+                    <div class="prediction-result miss">
+                        <div class="prediction-text">⚠️ ERROR</div>
+                        <div class="confidence">${data.error}</div>
+                    </div>
+                    <div class="shot-visual">
+                        <div class="basketball-emoji">🏀</div>
+                    </div>
+                `;
+            }
+            
+            // Trigger animation
+            const basketball = resultContent.querySelector('.basketball-emoji');
+            if (basketball) {
+                basketball.style.animation = 'none';
+                setTimeout(() => {
+                    basketball.style.animation = 'bounce 1s ease-in-out';
+                }, 10);
+            }
+            
+        } catch (error) {
+            console.error('Error:', error);
+            resultContent.innerHTML = `
+                <div class="prediction-result miss">
+                    <div class="prediction-text">⚠️ ERROR</div>
+                    <div class="confidence">Failed to get prediction. Please try again.</div>
+                </div>
+                <div class="shot-visual">
+                    <div class="basketball-emoji">🏀</div>
+                </div>
+            `;
+        }
+    });
+    
+    // Back button functionality
+    backBtn.addEventListener('click', function() {
+        resultCard.classList.remove('show');
+        formCard.classList.remove('hide');
+    });
+    
+    // Create background particles
+    createParticles();
+    
+    // Log successful load
+    console.log("✅ Basketball Shot Predictor UI Loaded Successfully!");
+    console.log("🎯 Kobe Bryant full background active");
+    console.log("📊 Using AJAX for predictions");
+</script></body>
 </html>
