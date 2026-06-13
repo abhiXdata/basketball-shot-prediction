@@ -89,7 +89,12 @@ def initialize():
 def predict():
     global model
     
+    # Check if it's an AJAX request
+    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+    
     if model is None:
+        if is_ajax:
+            return jsonify({'error': 'Model not available'}), 503
         return render_template(
             'index.html',
             prediction_text="⚠️ Model not available. Please refresh the page."
@@ -121,16 +126,32 @@ def predict():
         prediction = model.predict(features)
         probability = model.predict_proba(features)
 
-        result = "🏀 Shot Made" if prediction[0] == 1 else "❌ Shot Missed"
+        is_made = bool(prediction[0] == 1)
         confidence = round(max(probability[0]) * 100, 2)
-
+        
+        result_text = "Shot Made" if is_made else "Shot Missed"
+        full_text = f"🏀 {result_text} | Confidence: {confidence}%"
+        
+        # Return JSON for AJAX requests
+        if is_ajax:
+            return jsonify({
+                'success': True,
+                'is_made': is_made,
+                'confidence': confidence,
+                'result': result_text,
+                'full_text': full_text
+            })
+        
+        # Return HTML for regular form submission
         return render_template(
             'index.html',
-            prediction_text=f"{result} | Confidence: {confidence}%"
+            prediction_text=full_text
         )
 
     except Exception as e:
         print("ERROR OCCURRED:", str(e))
+        if is_ajax:
+            return jsonify({'error': str(e)}), 500
         return render_template(
             'index.html',
             prediction_text=f"Error: {str(e)}"
