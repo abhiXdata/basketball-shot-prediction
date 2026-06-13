@@ -437,70 +437,77 @@
         }
 
         async function initialize() {
-            createParticles();
-            showRandomFact();
-            const factInterval = setInterval(showRandomFact, 4000);
+    console.log("=== LOADING SCREEN STARTED ===");
+    createParticles();
+    showRandomFact();
+    const factInterval = setInterval(showRandomFact, 4000);
+    
+    // Animate progress bar while waiting
+    const progressInterval = setInterval(() => {
+        if (progress < 90) {
+            progress += Math.random() * 5;
+            progress = Math.min(progress, 90);
+            updateProgress(progress);
+        }
+    }, 500);
+    
+    let isReady = false;
+    let attempts = 0;
+    const maxAttempts = 60; // 60 seconds max wait
+    
+    while (!isReady && attempts < maxAttempts) {
+        console.log(`Attempt ${attempts + 1}: Checking model status...`);
+        isReady = await checkModelStatus();
+        
+        if (!isReady) {
+            attempts++;
+            await new Promise(resolve => setTimeout(resolve, 1000));
             
-            // Animate progress bar while waiting
-            const progressInterval = setInterval(() => {
-                if (progress < 90) {
-                    progress += Math.random() * 5;
-                    progress = Math.min(progress, 90);
-                    updateProgress(progress);
-                }
-            }, 500);
-            
-            let isReady = false;
-            let attempts = 0;
-            const maxAttempts = 60; // 60 seconds max wait
-            
-            while (!isReady && attempts < maxAttempts) {
-                isReady = await checkModelStatus();
-                
-                if (!isReady) {
-                    attempts++;
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    
-                    // Update status text based on attempts
-                    if (attempts > 10) {
-                        statusText.innerHTML = "Server is waking up (cold start)";
-                        statusSubtext.textContent = "This may take up to 60 seconds on free tier";
-                    } else if (attempts > 5) {
-                        statusText.innerHTML = "Loading model from disk";
-                        statusSubtext.textContent = "Please wait, model is being loaded...";
-                    }
-                }
-            }
-            
-            clearInterval(progressInterval);
-            clearInterval(factInterval);
-            
-            if (isReady) {
-                // Complete the progress
-                let complete = progress;
-                const completeInterval = setInterval(() => {
-                    complete += 2;
-                    updateProgress(complete);
-                    if (complete >= 100) {
-                        clearInterval(completeInterval);
-                        statusText.innerHTML = "Ready! Launching application...";
-                        statusSubtext.textContent = "Redirecting to dashboard";
-                        
-                        setTimeout(() => {
-                            loadingContainer.classList.add('fade-out');
-                            setTimeout(() => {
-                                window.location.href = '/?loaded=true';
-                            }, 600);
-                        }, 500);
-                    }
-                }, 50);
-            } else {
-                // Show retry button
-                statusText.innerHTML = "Connection timeout";
-                statusSubtext.innerHTML = 'The server is taking longer than expected. <br> <span class="retry-button" onclick="location.reload()">🔄 Retry Connection</span>';
-                statusSubtext.style.cursor = "pointer";
+            // Update status text based on attempts
+            if (attempts > 10) {
+                statusText.innerHTML = "Server is waking up (cold start)";
+                statusSubtext.textContent = "This may take up to 60 seconds on free tier";
+            } else if (attempts > 5) {
+                statusText.innerHTML = "Loading model from disk";
+                statusSubtext.textContent = "Please wait, model is being loaded...";
             }
         }
+    }
+    
+    clearInterval(progressInterval);
+    clearInterval(factInterval);
+    
+    if (isReady) {
+        console.log("✅ Model is ready! Starting redirect...");
+        // Complete the progress
+        let complete = progress;
+        const completeInterval = setInterval(() => {
+            complete += 2;
+            updateProgress(complete);
+            if (complete >= 100) {
+                clearInterval(completeInterval);
+                statusText.innerHTML = "Ready! Launching application...";
+                statusSubtext.textContent = "Redirecting to dashboard";
+                
+                console.log("🔄 Redirecting to /?loaded=true");
+                setTimeout(() => {
+                    loadingContainer.classList.add('fade-out');
+                    setTimeout(() => {
+                        // Use window.location.assign for better debugging
+                        console.log("🚀 Executing redirect now...");
+                        window.location.assign('/?loaded=true');
+                    }, 600);
+                }, 500);
+            }
+        }, 50);
+    } else {
+        console.log("❌ Timeout - model not ready");
+        // Show retry button
+        statusText.innerHTML = "Connection timeout";
+        statusSubtext.innerHTML = 'The server is taking longer than expected. <br> <span class="retry-button" onclick="location.reload()">🔄 Retry Connection</span>';
+        statusSubtext.style.cursor = "pointer";
+    }
+}
         
         // Handle page cache
         window.addEventListener('pageshow', function(event) {
