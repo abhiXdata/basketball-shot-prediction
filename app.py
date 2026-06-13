@@ -45,6 +45,19 @@ thread.start()
 def favicon():
     return '', 204
 
+@app.route('/debug')
+def debug():
+    """Debug route to check what's happening"""
+    import os
+    templates_dir = os.path.join(os.path.dirname(__file__), 'templates')
+    templates = os.listdir(templates_dir) if os.path.exists(templates_dir) else []
+    return {
+        'templates_folder_exists': os.path.exists(templates_dir),
+        'templates_found': templates,
+        'current_loaded_param': request.args.get('loaded', 'not_provided'),
+        'model_status': model_loading_status
+    }
+    
 @app.route('/')
 def index():
     """Main route - handles both loading and main app"""
