@@ -5,248 +5,184 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Basketball Shot Predictor</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
             padding: 20px;
         }
-
         .container {
-            max-width: 800px;
-            margin: 0 auto;
-            animation: slideUp 0.5s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-
-        .prediction-card {
             background: white;
             border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .input-group input, .input-group select {
+            padding: 40px;
+            max-width: 800px;
             width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .alert {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
             border-radius: 10px;
-            font-size: 14px;
-            transition: border-color 0.3s;
+            margin-bottom: 20px;
+            text-align: center;
         }
-
-        .input-group input:focus, .input-group select:focus {
-            outline: none;
-            border-color: #FF6B35;
-        }
-
-        .form-row {
+        form {
             display: grid;
-            grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
-
-        .predict-btn {
-            width: 100%;
-            padding: 15px;
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input, select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        button {
             background: linear-gradient(135deg, #FF6B35, #FF8C42);
             color: white;
+            padding: 15px;
             border: none;
             border-radius: 10px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
             margin-top: 10px;
         }
-
-        .predict-btn:hover {
+        button:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(255,107,53,0.3);
         }
-
-        .result-card {
-            background: white;
-            border-radius: 20px;
+        .result {
+            margin-top: 20px;
             padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            text-align: center;
-        }
-
-        .result-text {
-            font-size: 20px;
-            font-weight: bold;
-            padding: 15px;
-            border-radius: 10px;
             background: #f0f0f0;
-        }
-
-        .footer {
+            border-radius: 10px;
             text-align: center;
-            color: white;
-            margin-top: 30px;
-            font-size: 14px;
-            opacity: 0.8;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            h1 { font-size: 24px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🏀 Basketball Shot Predictor</h1>
-            <p>Enter shot parameters to predict if it will go in!</p>
-        </div>
-
-        <div class="prediction-card">
-            <form action="/predict" method="POST">
-                <div class="form-row">
-                    <div class="input-group">
-                        <label>Action Type:</label>
-                        <input type="number" name="action_type" required>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label>Combined Shot Type:</label>
-                        <input type="number" name="combined_shot_type" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="input-group">
-                        <label>Location X:</label>
-                        <input type="number" step="any" name="loc_x" required>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label>Location Y:</label>
-                        <input type="number" step="any" name="loc_y" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="input-group">
-                        <label>Period:</label>
-                        <input type="number" name="period" required>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label>Playoffs (0 or 1):</label>
-                        <input type="number" name="playoffs" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="input-group">
-                        <label>Season:</label>
-                        <input type="number" name="season" required>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label>Shot Distance:</label>
-                        <input type="number" name="shot_distance" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="input-group">
-                        <label>Shot Type:</label>
-                        <input type="number" name="shot_type" required>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label>Shot Zone Area:</label>
-                        <input type="number" name="shot_zone_area" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="input-group">
-                        <label>Shot Zone Basic:</label>
-                        <input type="number" name="shot_zone_basic" required>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label>Shot Zone Range:</label>
-                        <input type="number" name="shot_zone_range" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="input-group">
-                        <label>Matchup:</label>
-                        <input type="number" name="matchup" required>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label>Opponent:</label>
-                        <input type="number" name="opponent" required>
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <label>Time Remaining:</label>
-                    <input type="number" name="time_remaining" required>
-                </div>
-                
-                <button type="submit" class="predict-btn">Predict Shot</button>
-            </form>
+        <h1>🏀 Basketball Shot Predictor</h1>
+        
+        <div class="alert">
+            ✅ Application Loaded Successfully! | Time: <span id="timestamp"></span>
         </div>
         
-        {% if prediction_text %}
-        <div class="result-card">
-            <div class="result-text">
-                {{ prediction_text }}
+        <form action="/predict" method="POST">
+            <div class="form-group">
+                <label>Action Type:</label>
+                <input type="number" name="action_type" required value="1">
             </div>
+            
+            <div class="form-group">
+                <label>Combined Shot Type:</label>
+                <input type="number" name="combined_shot_type" required value="1">
+            </div>
+            
+            <div class="form-group">
+                <label>Location X:</label>
+                <input type="number" step="any" name="loc_x" required value="0">
+            </div>
+            
+            <div class="form-group">
+                <label>Location Y:</label>
+                <input type="number" step="any" name="loc_y" required value="0">
+            </div>
+            
+            <div class="form-group">
+                <label>Period:</label>
+                <input type="number" name="period" required value="4">
+            </div>
+            
+            <div class="form-group">
+                <label>Playoffs (0 or 1):</label>
+                <input type="number" name="playoffs" required value="0">
+            </div>
+            
+            <div class="form-group">
+                <label>Season:</label>
+                <input type="number" name="season" required value="2023">
+            </div>
+            
+            <div class="form-group">
+                <label>Shot Distance:</label>
+                <input type="number" name="shot_distance" required value="15">
+            </div>
+            
+            <div class="form-group">
+                <label>Shot Type:</label>
+                <input type="number" name="shot_type" required value="1">
+            </div>
+            
+            <div class="form-group">
+                <label>Shot Zone Area:</label>
+                <input type="number" name="shot_zone_area" required value="1">
+            </div>
+            
+            <div class="form-group">
+                <label>Shot Zone Basic:</label>
+                <input type="number" name="shot_zone_basic" required value="1">
+            </div>
+            
+            <div class="form-group">
+                <label>Shot Zone Range:</label>
+                <input type="number" name="shot_zone_range" required value="1">
+            </div>
+            
+            <div class="form-group">
+                <label>Matchup:</label>
+                <input type="number" name="matchup" required value="1">
+            </div>
+            
+            <div class="form-group">
+                <label>Opponent:</label>
+                <input type="number" name="opponent" required value="1">
+            </div>
+            
+            <div class="form-group">
+                <label>Time Remaining:</label>
+                <input type="number" name="time_remaining" required value="120">
+            </div>
+            
+            <button type="submit">🔮 Predict Shot</button>
+        </form>
+        
+        {% if prediction_text %}
+        <div class="result">
+            {{ prediction_text }}
         </div>
         {% endif %}
-
-        <div class="footer">
-            <p>Powered by Machine Learning</p>
-        </div>
     </div>
+    
+    <script>
+        document.getElementById('timestamp').textContent = new Date().toLocaleTimeString();
+        console.log("✅ Index.html loaded successfully!");
+        console.log("Current URL:", window.location.href);
+    </script>
 </body>
 </html>
