@@ -3,186 +3,569 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basketball Shot Predictor</title>
+    <title>Basketball Shot Predictor | Pro Analytics</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        * {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated basketball court background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255,107,53,0.05) 2%, transparent 2.5%),
+                repeating-linear-gradient(45deg, rgba(255,107,53,0.02) 0px, rgba(255,107,53,0.02) 2px, transparent 2px, transparent 8px);
+            background-size: 30px 30px, 8px 8px;
+            pointer-events: none;
+        }
+
+        /* Floating particles */
+        .particle {
+            position: fixed;
+            background: rgba(255,107,53,0.1);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: floatParticle linear infinite;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
         .container {
-            background: white;
-            border-radius: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
             padding: 40px;
-            max-width: 800px;
-            width: 100%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
         }
-        h1 {
-            color: #333;
+
+        /* Two column layout */
+        .split-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 30px;
+            align-items: start;
+        }
+
+        /* Main form card - left side */
+        .form-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 35px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .form-header {
             text-align: center;
             margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #FF6B35;
         }
-        .alert {
-            background: #d4edda;
-            color: #155724;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
+
+        .form-header h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 10px;
         }
-        form {
+
+        .form-header h1 span {
+            background: linear-gradient(135deg, #FF6B35, #FF8C42);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .form-header p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Form grid layout */
+        .form-grid {
             display: grid;
-            gap: 15px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
         }
-        .form-group {
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .input-group {
             display: flex;
             flex-direction: column;
         }
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #555;
+
+        .input-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        input, select {
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+
+        .input-group label i {
+            color: #FF6B35;
+            margin-right: 5px;
+        }
+
+        .input-group input, .input-group select {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
             font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
         }
-        button {
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #FF6B35;
+            box-shadow: 0 0 0 3px rgba(255,107,53,0.1);
+        }
+
+        .input-group input:hover, .input-group select:hover {
+            border-color: #FF8C42;
+        }
+
+        /* Predict button */
+        .predict-btn {
+            width: 100%;
+            padding: 16px;
             background: linear-gradient(135deg, #FF6B35, #FF8C42);
             color: white;
-            padding: 15px;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255,107,53,0.3);
-        }
-        .result {
-            margin-top: 20px;
-            padding: 20px;
-            background: #f0f0f0;
-            border-radius: 10px;
-            text-align: center;
+            border-radius: 12px;
             font-size: 18px;
             font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
         }
+
+        .predict-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .predict-btn:hover::before {
+            left: 100%;
+        }
+
+        .predict-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255,107,53,0.3);
+        }
+
+        /* Right side - Result card */
+        .result-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 35px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.2);
+            position: sticky;
+            top: 40px;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .result-header h2 {
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .result-header .basketball-icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+
+        .prediction-result {
+            text-align: center;
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .prediction-result.make {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .prediction-result.miss {
+            background: linear-gradient(135deg, #f44336, #da190b);
+            color: white;
+        }
+
+        .prediction-result.placeholder {
+            background: #f5f5f5;
+            color: #999;
+        }
+
+        .prediction-text {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .confidence {
+            font-size: 1rem;
+            opacity: 0.95;
+        }
+
+        .shot-visual {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+        }
+
+        .basketball-animation {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            background: radial-gradient(circle at 30% 30%, #FF6B35, #D44918);
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .basketball-animation.make {
+            animation: swish 1s ease-out;
+        }
+
+        .basketball-animation.miss {
+            animation: bounceOff 0.8s ease-out;
+        }
+
+        @keyframes swish {
+            0% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-100px) scale(1.1);
+            }
+            100% {
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes bounceOff {
+            0% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-30px);
+            }
+            50% {
+                transform: translateX(30px);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.8rem;
+        }
+
+        /* Loading state for button */
+        .predict-btn.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .predict-btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            .split-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .result-card {
+                position: static;
+                margin-top: 30px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+        }
+
         @media (max-width: 768px) {
-            .container { padding: 20px; }
-            h1 { font-size: 24px; }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .full-width {
+                grid-column: span 1;
+            }
+            
+            .form-card {
+                padding: 25px;
+            }
+            
+            .form-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #FF6B35;
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🏀 Basketball Shot Predictor</h1>
-        
-        <div class="alert">
-            ✅ Application Loaded Successfully! | Time: <span id="timestamp"></span>
+        <div class="split-layout">
+            <!-- Left side - Form Card -->
+            <div class="form-card">
+                <div class="form-header">
+                    <h1>🏀 <span>Shot Predictor Pro</span></h1>
+                    <p>Enter shot parameters for AI-powered prediction</p>
+                </div>
+
+                <form action="/predict" method="POST" id="predictionForm">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label><i>🎯</i> Action Type</label>
+                            <input type="number" name="action_type" required placeholder="Enter action type" value="1">
+                        </div>
+
+                        <div class="input-group">
+                            <label><i>🔫</i> Combined Shot Type</label>
+                            <input type="number" name="combined_shot_type" required placeholder="Enter combined shot type" value="1">
+                        </div>
+
+                        <div class="input-group">
+                            <label><i>📍</i> Location X</label>
+                            <input type="number" step="any" name="loc_x" required placeholder="X coordinate" value="0">
+                        </div>
+
+                        <div class="input-group">
+                            <label><i>📍</i> Location Y</label>
+                            <input type="number" step="any" name="loc_y" required placeholder="Y coordinate" value="0">
+                        </div>
+
+                        <div class="input-group">
+                            <label><i>⏱️</i> Period</label>
+                            <input type="number" name="period" required placeholder="1-4" value="4">
+                        </div>
+
+                        <div class="input-group">
+                            <label><i>🏆</i> Playoffs</label>
+                            <select name="playoffs" required>
+                                <option value="0">Regular Season</option>
+                                <option value="1">Playoffs</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label><i>📅</i> Season</label>
+                            <input type="number" name="season" required placeholder="Year" value="2023">
+                        </div>
+
+                        <div class="input-group">
+                            <label><i>📏</i> Shot Distance (ft)</label>
+                            <input type="number" name="shot_distance" required placeholder="Distance in feet" value="15">
+                        </div>
+
+                        <div class="input-group">
+                            <label><i>🎪</i> Shot Type</label>
+                            <input type="number" name="shot_type" required placeholder="Shot type code" value="1">
+                        </div>
+
+                        <div class="input-group">
+                            <label><i>🗺️</i> Shot Zone Area</label>
+                            <input type="number" name="shot_zone_area" required placeholder="Zone area code" value="1">
+                        </div>
+
+                        <div class="input-group">
+                            <label><i>🎯</i> Shot Zone Basic</label>
+                            <input type="number" name="shot_zone_basic" required placeholder="Basic zone code" value="1">
+                        </div>
+
+                        <div class="input-group">
+                            <label><i>📊</i> Shot Zone Range</label>
+                            <input type="number" name="shot_zone_range" required placeholder="Range code" value="1">
+                        </div>
+
+                        <div class="input-group">
+                            <label><i>👥</i> Matchup</label>
+                            <input type="number" name="matchup" required placeholder="Matchup code" value="1">
+                        </div>
+
+                        <div class="input-group">
+                            <label><i>⚔️</i> Opponent</label>
+                            <input type="number" name="opponent" required placeholder="Opponent code" value="1">
+                        </div>
+
+                        <div class="input-group full-width">
+                            <label><i>⏰</i> Time Remaining (seconds)</label>
+                            <input type="number" name="time_remaining" required placeholder="Time left in game" value="120">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="predict-btn" id="predictBtn">
+                        🔮 Predict Shot Outcome
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right side - Result Card -->
+            <div class="result-card">
+                <div class="result-header">
+                    <div class="basketball-icon">🏀</div>
+                    <h2>Prediction Result</h2>
+                </div>
+
+                <div id="resultContainer">
+                    {% if prediction_text %}
+                        {% if "Made" in prediction_text %}
+                            <div class="prediction-result make">
+                                <div class="prediction-text">🏆 SHOT MADE! 🏆</div>
+                                <div class="confidence">{{ prediction_text }}</div>
+                            </div>
+                            <div class="shot-visual">
+                                <div class="basketball-animation make"></div>
+                            </div>
+                        {% elif "Missed" in prediction_text %}
+                            <div class="prediction-result miss">
+                                <div class="prediction-text">💔 SHOT MISSED 💔</div>
+                                <div class="confidence">{{ prediction_text }}</div>
+                            </div>
+                            <div class="shot-visual">
+                                <div class="basketball-animation miss"></div>
+                            </div>
+                        {% else %}
+                            <div class="prediction-result placeholder">
+                                <div class="prediction-text">🤔 Waiting for Input</div>
+                                <div class="confidence">Enter shot parameters and click predict</div>
+                            </div>
+                            <div class="shot-visual">
+                                <div class="basketball-animation"></div>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="prediction-result placeholder">
+                            <div class="prediction-text">🤔 Waiting for Input</div>
+                            <div class="confidence">Enter shot parameters and click predict</div>
+                        </div>
+                        <div class="shot-visual">
+                            <div class="basketball-animation"></div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-        
-        <form action="/predict" method="POST">
-            <div class="form-group">
-                <label>Action Type:</label>
-                <input type="number" name="action_type" required value="1">
-            </div>
-            
-            <div class="form-group">
-                <label>Combined Shot Type:</label>
-                <input type="number" name="combined_shot_type" required value="1">
-            </div>
-            
-            <div class="form-group">
-                <label>Location X:</label>
-                <input type="number" step="any" name="loc_x" required value="0">
-            </div>
-            
-            <div class="form-group">
-                <label>Location Y:</label>
-                <input type="number" step="any" name="loc_y" required value="0">
-            </div>
-            
-            <div class="form-group">
-                <label>Period:</label>
-                <input type="number" name="period" required value="4">
-            </div>
-            
-            <div class="form-group">
-                <label>Playoffs (0 or 1):</label>
-                <input type="number" name="playoffs" required value="0">
-            </div>
-            
-            <div class="form-group">
-                <label>Season:</label>
-                <input type="number" name="season" required value="2023">
-            </div>
-            
-            <div class="form-group">
-                <label>Shot Distance:</label>
-                <input type="number" name="shot_distance" required value="15">
-            </div>
-            
-            <div class="form-group">
-                <label>Shot Type:</label>
-                <input type="number" name="shot_type" required value="1">
-            </div>
-            
-            <div class="form-group">
-                <label>Shot Zone Area:</label>
-                <input type="number" name="shot_zone_area" required value="1">
-            </div>
-            
-            <div class="form-group">
-                <label>Shot Zone Basic:</label>
-                <input type="number" name="shot_zone_basic" required value="1">
-            </div>
-            
-            <div class="form-group">
-                <label>Shot Zone Range:</label>
-                <input type="number" name="shot_zone_range" required value="1">
-            </div>
-            
-            <div class="form-group">
-                <label>Matchup:</label>
-                <input type="number" name="matchup" required value="1">
-            </div>
-            
-            <div class="form-group">
-                <label>Opponent:</label>
-                <input type="number" name="opponent" required value="1">
-            </div>
-            
-            <div class="form-group">
-                <label>Time Remaining:</label>
-                <input type="number" name="time_remaining" required value="120">
-            </div>
-            
-            <button type="submit">🔮 Predict Shot</button>
-        </form>
-        
-        {% if prediction_text %}
-        <div class="result">
-            {{ prediction_text }}
+
+        <div class="footer">
+            <p>Powered by Advanced Machine Learning | NBA Shot Analytics</p>
         </div>
-        {% endif %}
     </div>
-    
+
     <script>
-        document.getElementById('timestamp').textContent = new Date().toLocaleTimeString();
-        console.log("✅ Index.html loaded successfully!");
-        console.log("Current URL:", window.location.href);
+        // Create floating particles
+        function createParticles() {
+            const particleCount = 30;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const size = Math.random() * 5 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.animationDuration = `${Math.random() * 15 + 10}s`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                document.body.appendChild(particle);
+            }
+        }
+
+        // Handle form submission with loading state
+        document.getElementById('predictionForm').addEventListener('submit', function(e) {
+            const btn = document.getElementById('predictBtn');
+            btn.classList.add('loading');
+            btn.textContent = ' Analyzing Shot...';
+        });
+
+        // Create background particles
+        createParticles();
+
+        // Log successful load
+        console.log("✅ Basketball Shot Predictor UI Loaded Successfully!");
+        console.log("All 15 input fields are ready");
     </script>
 </body>
 </html>
