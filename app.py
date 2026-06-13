@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_from_directory, jsonify, url_for
+from flask import Flask, render_template, request, send_from_directory, jsonify
 import numpy as np
 import pickle
 import time
@@ -50,23 +50,14 @@ def index():
     """Main route - handles both loading and main app"""
     # Check if this request is coming from loading screen completion
     loaded = request.args.get('loaded', 'false')
-    force_loading = request.args.get('loading', 'false')
     
-    # If force_loading is true or model not ready and not coming from loaded
-    if force_loading == 'true':
-        return render_template('loading.html')
-    
-    # If loaded=true, show main app regardless of model status
+    # If loaded=true, show main app
     if loaded == 'true':
-        # If model is loaded, show main app
-        if model is not None:
-            return render_template('index.html')
-        else:
-            # Model not ready yet, show loading with status
-            return render_template('loading.html', server_status=model_loading_status)
-    
-    # First visit - always show loading screen
-    return render_template('loading.html')
+        # Always show index.html when loaded=true
+        return render_template('index.html')
+    else:
+        # First visit - show loading screen
+        return render_template('loading.html')
 
 @app.route('/api/status', methods=['GET'])
 def get_status():
