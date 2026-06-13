@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_from_directory, jsonify
+from flask import Flask, render_template, request, send_from_directory, jsonify, url_for
 import numpy as np
 import pickle
 import time
@@ -47,19 +47,26 @@ def favicon():
 
 @app.route('/')
 def index():
-    """Main route - always shows loading screen first"""
+    """Main route - handles both loading and main app"""
+    # Check if this request is coming from loading screen completion
     loaded = request.args.get('loaded', 'false')
+    force_loading = request.args.get('loading', 'false')
     
+    # If force_loading is true or model not ready and not coming from loaded
+    if force_loading == 'true':
+        return render_template('loading.html')
+    
+    # If loaded=true, show main app regardless of model status
     if loaded == 'true':
-        # Show main app only if model is loaded
+        # If model is loaded, show main app
         if model is not None:
             return render_template('index.html')
         else:
             # Model not ready yet, show loading with status
-            return render_template('loading.html')
-    else:
-        # First load - show loading screen
-        return render_template('loading.html')
+            return render_template('loading.html', server_status=model_loading_status)
+    
+    # First visit - always show loading screen
+    return render_template('loading.html')
 
 @app.route('/api/status', methods=['GET'])
 def get_status():
@@ -149,4 +156,6 @@ def predict():
         )
     
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Get port from environment variable for Render
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=False, host='0.0.0.0', port=port)
