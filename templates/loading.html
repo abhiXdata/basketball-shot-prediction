@@ -403,39 +403,46 @@
         }
 
         async function checkModelStatus() {
-            try {
-                const response = await fetch('/api/status', {
-                    headers: { 'Cache-Control': 'no-cache' }
-                });
-                const data = await response.json();
-                
-                const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(1);
-                loadTimeSpan.textContent = `${elapsedTime}s`;
-                
-                if (data.model_ready) {
-                    modelStatusSpan.textContent = "LOADED";
-                    modelStatusSpan.className = "status-value success";
-                    serverStatusSpan.textContent = "ONLINE";
-                    serverStatusSpan.className = "status-value success";
-                    return true;
-                } else if (data.status === 'error') {
-                    modelStatusSpan.textContent = "ERROR";
-                    modelStatusSpan.className = "status-value error";
-                    statusText.innerHTML = "Model loading failed";
-                    statusSubtext.textContent = data.error || "Please refresh the page";
-                    return false;
-                } else {
-                    modelStatusSpan.textContent = "LOADING...";
-                    modelStatusSpan.className = "status-value";
-                    serverStatusSpan.textContent = "INITIALIZING";
-                    return false;
-                }
-            } catch (error) {
-                console.log("Server not ready yet:", error);
-                return false;
-            }
+    try {
+        const response = await fetch('/api/status', {
+            headers: { 'Cache-Control': 'no-cache' }
+        });
+        const data = await response.json();
+        
+        const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(1);
+        loadTimeSpan.textContent = `${elapsedTime}s`;
+        
+        // Show if using mock model
+        if (data.using_mock) {
+            console.log("⚠️ Using mock model for testing");
+            statusSubtext.textContent = "Using test model (model.pkl not found)";
         }
-
+        
+        if (data.model_ready) {
+            modelStatusSpan.textContent = "LOADED";
+            modelStatusSpan.className = "status-value success";
+            serverStatusSpan.textContent = "ONLINE";
+            serverStatusSpan.className = "status-value success";
+            console.log("✅ Model is ready!", data.using_mock ? "(Mock model)" : "(Real model)");
+            return true;
+        } else if (data.status === 'error') {
+            modelStatusSpan.textContent = "ERROR";
+            modelStatusSpan.className = "status-value error";
+            statusText.innerHTML = "Model loading failed";
+            statusSubtext.textContent = data.error || "Please refresh the page";
+            return false;
+        } else {
+            modelStatusSpan.textContent = "LOADING...";
+            modelStatusSpan.className = "status-value";
+            serverStatusSpan.textContent = "INITIALIZING";
+            console.log("⏳ Model still loading...", data.status);
+            return false;
+        }
+    } catch (error) {
+        console.log("Server not ready yet:", error);
+        return false;
+    }
+}
         async function initialize() {
     console.log("=== LOADING SCREEN STARTED ===");
     createParticles();
