@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Basketball Shot Predictor | Loading</title>
+    <title>Starting Shot Predictor | Loading</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -17,7 +17,7 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -26,35 +26,40 @@
             overflow: hidden;
         }
 
-        /* Animated background particles */
-        .bg-particles {
+        /* Terminal-style background effect */
+        .terminal-bg {
             position: absolute;
             width: 100%;
             height: 100%;
-            overflow: hidden;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 0, 0.03) 2px,
+                    rgba(0, 255, 0, 0.03) 4px
+                );
+            pointer-events: none;
         }
 
-        .particle {
+        /* Animated grid */
+        .grid {
             position: absolute;
-            background: rgba(255, 107, 53, 0.1);
-            border-radius: 50%;
-            animation: float linear infinite;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255,107,53,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,107,53,0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            animation: gridMove 20s linear infinite;
         }
 
-        @keyframes float {
+        @keyframes gridMove {
             0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.5;
-            }
-            90% {
-                opacity: 0.5;
+                transform: translate(0, 0);
             }
             100% {
-                transform: translateY(-100vh) rotate(360deg);
-                opacity: 0;
+                transform: translate(30px, 30px);
             }
         }
 
@@ -64,6 +69,8 @@
             z-index: 2;
             text-align: center;
             padding: 40px;
+            max-width: 550px;
+            width: 90%;
             animation: fadeInUp 0.6s ease-out;
         }
 
@@ -78,43 +85,61 @@
             }
         }
 
-        /* Basketball court pattern overlay */
-        .court-pattern {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-image: radial-gradient(circle at 20% 50%, rgba(255,107,53,0.03) 2%, transparent 2.5%);
-            background-size: 30px 30px;
-            pointer-events: none;
+        /* Brand section */
+        .brand {
+            margin-bottom: 35px;
         }
 
-        /* Logo/Brand section */
-        .brand {
-            margin-bottom: 40px;
+        .logo-wrapper {
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
         }
 
         .logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
+            width: 85px;
+            height: 85px;
             background: linear-gradient(135deg, #FF6B35, #FF8C42);
-            border-radius: 20px;
+            border-radius: 25px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            font-size: 45px;
             box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
-            animation: pulse 2s ease-in-out infinite;
+            animation: logoGlow 2s ease-in-out infinite;
         }
 
-        @keyframes pulse {
+        @keyframes logoGlow {
             0%, 100% {
-                transform: scale(1);
                 box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
             }
             50% {
-                transform: scale(1.05);
-                box-shadow: 0 15px 40px rgba(255, 107, 53, 0.5);
+                box-shadow: 0 15px 40px rgba(255, 107, 53, 0.6);
+            }
+        }
+
+        .logo-pulse {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 107, 53, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulseRing 1.5s ease-out infinite;
+        }
+
+        @keyframes pulseRing {
+            0% {
+                width: 85px;
+                height: 85px;
+                opacity: 0.5;
+            }
+            100% {
+                width: 150px;
+                height: 150px;
+                opacity: 0;
             }
         }
 
@@ -127,9 +152,49 @@
         }
 
         .brand p {
-            color: rgba(255,255,255,0.6);
-            font-size: 14px;
+            color: rgba(255,255,255,0.5);
+            font-size: 13px;
             font-weight: 400;
+        }
+
+        /* Server status card */
+        .server-status {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            font-family: 'Courier New', monospace;
+        }
+
+        .status-line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .status-label {
+            color: rgba(255,255,255,0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-value {
+            color: #4CAF50;
+            font-weight: 600;
+        }
+
+        .status-value.loading {
+            color: #FF8C42;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         /* Progress section */
@@ -137,15 +202,15 @@
             background: rgba(255,255,255,0.05);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 30px 40px;
-            margin-top: 20px;
+            padding: 25px 30px;
+            margin-bottom: 20px;
             border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .progress-stats {
+        .progress-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             font-size: 12px;
             font-weight: 500;
             color: rgba(255,255,255,0.7);
@@ -154,12 +219,12 @@
         }
 
         .progress-bar-container {
-            width: 400px;
+            width: 100%;
             height: 6px;
             background: rgba(255,255,255,0.1);
             border-radius: 10px;
             overflow: hidden;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .progress-bar {
@@ -167,9 +232,8 @@
             height: 100%;
             background: linear-gradient(90deg, #FF6B35, #FF8C42);
             border-radius: 10px;
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
-            overflow: hidden;
         }
 
         .progress-bar::after {
@@ -187,12 +251,8 @@
         }
 
         @keyframes shimmer {
-            0% {
-                transform: translateX(-100%);
-            }
-            100% {
-                transform: translateX(100%);
-            }
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         .status-text {
@@ -207,34 +267,71 @@
             font-size: 12px;
         }
 
+        .percentage {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FF6B35, #FF8C42);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Console log simulation */
+        .console-logs {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid rgba(255,107,53,0.3);
+        }
+
+        .log-entry {
+            color: #4CAF50;
+            margin-bottom: 5px;
+            padding-left: 10px;
+            border-left: 2px solid #FF6B35;
+            opacity: 0;
+            animation: logFadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes logFadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .log-time {
+            color: rgba(255,255,255,0.4);
+            margin-right: 10px;
+        }
+
         /* Facts section */
         .facts-section {
-            margin-top: 30px;
-            padding: 20px;
+            margin-top: 20px;
+            padding: 15px;
             background: rgba(255,255,255,0.03);
-            border-radius: 15px;
+            border-radius: 12px;
             border-left: 3px solid #FF6B35;
         }
 
-        .fact-label {
-            color: rgba(255,255,255,0.5);
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
         .fact-text {
-            color: white;
-            font-size: 14px;
+            color: rgba(255,255,255,0.8);
+            font-size: 13px;
             font-weight: 400;
-            line-height: 1.6;
-            max-width: 400px;
-            margin: 0 auto;
+            line-height: 1.5;
         }
 
-        /* Loading dots animation */
+        /* Loading dots */
         .loading-dots {
             display: inline-flex;
             gap: 4px;
@@ -249,327 +346,290 @@
             animation: dotPulse 1.4s ease-in-out infinite;
         }
 
-        .loading-dots span:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .loading-dots span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
 
         @keyframes dotPulse {
-            0%, 100% {
-                opacity: 0.3;
-                transform: scale(0.8);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.2);
-            }
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
         }
 
-        /* Percentage display */
-        .percentage {
-            font-size: 36px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #FF6B35, #FF8C42);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 5px;
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .progress-section {
-                padding: 20px 25px;
-            }
-            
-            .progress-bar-container {
-                width: 280px;
-            }
-            
-            .percentage {
-                font-size: 28px;
-            }
-            
-            .brand h1 {
-                font-size: 24px;
-            }
-            
-            .logo {
-                width: 60px;
-                height: 60px;
-                font-size: 30px;
-            }
-        }
-
-        /* Fade out animation */
+        /* Fade out */
         .fade-out {
-            animation: fadeOut 0.6s ease-out forwards;
+            animation: fadeOutPage 0.6s ease-out forwards;
         }
 
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-                visibility: visible;
-            }
-            to {
-                opacity: 0;
-                visibility: hidden;
-            }
+        @keyframes fadeOutPage {
+            from { opacity: 1; visibility: visible; }
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .loading-container { padding: 20px; }
+            .progress-section { padding: 20px; }
+            .percentage { font-size: 28px; }
+            .brand h1 { font-size: 24px; }
+            .logo { width: 65px; height: 65px; font-size: 35px; }
         }
     </style>
 </head>
 <body>
-    <!-- Animated background particles -->
-    <div class="bg-particles" id="particles"></div>
-    <div class="court-pattern"></div>
+    <div class="terminal-bg"></div>
+    <div class="grid"></div>
 
     <div class="loading-container" id="loadingContainer">
         <div class="brand">
-            <div class="logo">
-                🏀
+            <div class="logo-wrapper">
+                <div class="logo-pulse"></div>
+                <div class="logo">🏀</div>
             </div>
             <h1>Shot Predictor Pro</h1>
-            <p>Advanced Basketball Analytics</p>
+            <p>Advanced Basketball Analytics Platform</p>
+        </div>
+
+        <!-- Render-style server status -->
+        <div class="server-status">
+            <div class="status-line">
+                <span class="status-label">🚀 SERVER STATUS</span>
+                <span class="status-value" id="serverStatus">PROVISIONING</span>
+            </div>
+            <div class="status-line">
+                <span class="status-label">⚡ RENDER INSTANCE</span>
+                <span class="status-value" id="instanceStatus">WAKING UP...</span>
+            </div>
+            <div class="status-line">
+                <span class="status-label">🎯 MODEL STATUS</span>
+                <span class="status-value" id="modelStatus">INITIALIZING</span>
+            </div>
         </div>
 
         <div class="progress-section">
-            <div class="progress-stats">
-                <span>Initializing System</span>
-                <span id="percentageDisplay" class="percentage">0%</span>
+            <div class="progress-header">
+                <span>INITIALIZING SYSTEM</span>
+                <span class="percentage" id="percentageDisplay">0%</span>
             </div>
             <div class="progress-bar-container">
                 <div class="progress-bar" id="progressBar"></div>
             </div>
             <div class="status-text" id="statusText">
-                Loading model components
-                <div class="loading-dots">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
+                Connecting to Render servers
+                <div class="loading-dots"><span></span><span></span><span></span></div>
             </div>
-            <div class="status-subtext" id="statusSubtext">Please wait while we prepare your experience</div>
+            <div class="status-subtext" id="statusSubtext">Allocating compute resources...</div>
+        </div>
+
+        <!-- Console-style logs -->
+        <div class="console-logs" id="consoleLogs">
+            <div class="log-entry">
+                <span class="log-time">[12:25:12]</span> INCOMING HTTP REQUEST DETECTED...
+            </div>
         </div>
 
         <div class="facts-section">
-            <div class="fact-label">📊 DID YOU KNOW?</div>
             <div class="fact-text" id="factText">
-                Loading interesting facts...
+                ⚡ Loading interesting basketball facts...
             </div>
         </div>
     </div>
 
     <script>
-        // Professional basketball facts database
         const basketballFacts = [
-            {
-                fact: "The NBA's three-point line is 23 feet 9 inches at the top of the key",
-                icon: "🎯"
-            },
-            {
-                fact: "Michael Jordan holds the record for highest career scoring average at 30.12 PPG",
-                icon: "👑"
-            },
-            {
-                fact: "Stephen Curry made 402 three-pointers in the 2015-16 season, an NBA record",
-                icon: "🏆"
-            },
-            {
-                fact: "The free throw line has been 15 feet from the backboard since 1895",
-                icon: "📏"
-            },
-            {
-                fact: "Wilt Chamberlain once scored 100 points in a single game (1962)",
-                icon: "💯"
-            },
-            {
-                fact: "LeBron James is the only player with 30K+ points, 10K+ rebounds, and 10K+ assists",
-                icon: "🌟"
-            },
-            {
-                fact: "The shot clock was introduced in 1954 to increase scoring and pace",
-                icon: "⏱️"
-            },
-            {
-                fact: "NBA players shoot approximately 74% from the free throw line on average",
-                icon: "📈"
-            },
-            {
-                fact: "The record for most assists in a single game is 30 by Scott Skiles",
-                icon: "🎯"
-            },
-            {
-                fact: "Dirk Nowitzki played 21 seasons with the same team (most in NBA history)",
-                icon: "🤝"
-            },
-            {
-                fact: "The highest scoring NBA game was 186-184 (Pistons vs Nuggets, 1983)",
-                icon: "⚡"
-            },
-            {
-                fact: "Kareem Abdul-Jabbar scored the most career points (38,387) before LeBron broke it",
-                icon: "📊"
-            }
+            { fact: "The NBA three-point line is 23.75 feet from the basket at its furthest point", icon: "🎯" },
+            { fact: "Michael Jordan scored 63 points in a playoff game against the Celtics (1986)", icon: "👑" },
+            { fact: "Stephen Curry made 402 three-pointers in a single season (2015-16)", icon: "🏆" },
+            { fact: "The fastest triple-double was achieved by Nikola Jokić in 14 minutes and 33 seconds", icon: "⚡" },
+            { fact: "Wilt Chamberlain once averaged 50.4 points per game for an entire season", icon: "💯" },
+            { fact: "LeBron James is the all-time leading scorer in NBA history", icon: "👑" },
+            { fact: "The shortest NBA player was Tyrone 'Muggsy' Bogues at 5'3\"", icon: "📏" },
+            { fact: "Kobe Bryant scored 81 points in a single game (2nd most all-time)", icon: "🐍" }
         ];
 
         let progress = 0;
-        let currentFactIndex = 0;
-        let animationFrameId = null;
+        let logs = [];
+        let logIndex = 0;
+        let serverCheckInterval;
         
+        const renderLogs = [
+            "[12:25:12] INCOMING HTTP REQUEST DETECTED...",
+            "[12:25:15] SERVICE WAKING UP ...",
+            "[12:25:19] ALLOCATING COMPUTE RESOURCES ...",
+            "[12:25:22] PREPARING INSTANCE FOR INITIALIZATION ...",
+            "[12:25:26] STARTING THE INSTANCE ...",
+            "[12:25:32] ENVIRONMENT VARIABLES INJECTED ...",
+            "[12:25:34] FINALIZING STARTUP ...",
+            "[12:25:36] OPTIMIZING DEPLOYMENT ...",
+            "[12:25:38] LOADING ML MODEL ...",
+            "[12:25:42] MODEL INITIALIZED SUCCESSFULLY",
+            "[12:25:45] READY TO PREDICT!"
+        ];
+
         const progressBar = document.getElementById('progressBar');
         const statusText = document.getElementById('statusText');
         const statusSubtext = document.getElementById('statusSubtext');
         const loadingContainer = document.getElementById('loadingContainer');
         const factText = document.getElementById('factText');
         const percentageDisplay = document.getElementById('percentageDisplay');
+        const consoleLogs = document.getElementById('consoleLogs');
+        const serverStatusSpan = document.getElementById('serverStatus');
+        const instanceStatusSpan = document.getElementById('instanceStatus');
+        const modelStatusSpan = document.getElementById('modelStatus');
 
-        const statusMessages = [
-            { main: "Loading AI Model", sub: "Initializing neural networks and algorithms" },
-            { main: "Analyzing Shot Patterns", sub: "Processing historical basketball data" },
-            { main: "Calibrating Metrics", sub: "Setting up prediction parameters" },
-            { main: "Loading Player Profiles", sub: "Configuring player statistics database" },
-            { main: "Optimizing Performance", sub: "Fine-tuning prediction accuracy" },
-            { main: "Finalizing Setup", sub: "Almost ready to predict" }
-        ];
-
-        // Generate floating particles
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            const particleCount = 50;
-            
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                const size = Math.random() * 4 + 1;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.animationDuration = `${Math.random() * 10 + 10}s`;
-                particle.style.animationDelay = `${Math.random() * 5}s`;
-                particlesContainer.appendChild(particle);
-            }
+        function addLog(message) {
+            const logDiv = document.createElement('div');
+            logDiv.className = 'log-entry';
+            logDiv.innerHTML = message;
+            consoleLogs.appendChild(logDiv);
+            consoleLogs.scrollTop = consoleLogs.scrollHeight;
         }
 
-        // Show random fact with animation
+        function addRenderLog(index) {
+            if (index < renderLogs.length) {
+                addLog(renderLogs[index]);
+                
+                // Update status based on log index
+                if (index === 1) instanceStatusSpan.textContent = "WAKING UP...";
+                if (index === 3) instanceStatusSpan.textContent = "INITIALIZING";
+                if (index === 5) serverStatusSpan.textContent = "STARTING";
+                if (index === 6) serverStatusSpan.textContent = "CONFIGURING";
+                if (index === 8) {
+                    modelStatusSpan.textContent = "LOADING";
+                    statusText.innerHTML = "Loading AI Model";
+                    statusSubtext.textContent = "Initializing neural networks...";
+                }
+                if (index === 9) {
+                    modelStatusSpan.textContent = "READY";
+                    modelStatusSpan.style.color = "#4CAF50";
+                }
+                if (index === 10) {
+                    serverStatusSpan.textContent = "ONLINE";
+                    instanceStatusSpan.textContent = "ACTIVE";
+                }
+                
+                return true;
+            }
+            return false;
+        }
+
         function showRandomFact() {
             const randomIndex = Math.floor(Math.random() * basketballFacts.length);
             const fact = basketballFacts[randomIndex];
-            factText.style.opacity = '0';
-            setTimeout(() => {
-                factText.innerHTML = `${fact.icon} ${fact.fact}`;
-                factText.style.opacity = '1';
-            }, 300);
+            factText.innerHTML = `${fact.icon} ${fact.fact}`;
         }
 
-        // Update UI with smooth progress
+        async function checkServerStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                
+                if (data.model_ready) {
+                    modelStatusSpan.textContent = "LOADED";
+                    modelStatusSpan.style.color = "#4CAF50";
+                    return true;
+                } else if (data.status === 'loading') {
+                    modelStatusSpan.textContent = "LOADING...";
+                    modelStatusSpan.className = "status-value loading";
+                }
+                return false;
+            } catch (error) {
+                console.log("Server not ready yet");
+                return false;
+            }
+        }
+
+        async function initialize() {
+            showRandomFact();
+            const factInterval = setInterval(showRandomFact, 4000);
+            
+            // Add Render-style logs sequentially
+            let logCounter = 0;
+            const logInterval = setInterval(() => {
+                if (logCounter < renderLogs.length) {
+                    addRenderLog(logCounter);
+                    logCounter++;
+                    
+                    // Update progress
+                    progress = (logCounter / renderLogs.length) * 90;
+                    updateProgress(progress);
+                } else {
+                    clearInterval(logInterval);
+                }
+            }, 800);
+            
+            // Check server status periodically
+            serverCheckInterval = setInterval(async () => {
+                const isReady = await checkServerStatus();
+                if (isReady) {
+                    clearInterval(serverCheckInterval);
+                }
+            }, 1000);
+            
+            try {
+                // Wait for model to be ready via API
+                const response = await fetch('/api/initialize');
+                const data = await response.json();
+                
+                clearInterval(logInterval);
+                clearInterval(factInterval);
+                clearInterval(serverCheckInterval);
+                
+                if (data.status === 'success') {
+                    // Complete the progress
+                    let complete = progress;
+                    const completeInterval = setInterval(() => {
+                        complete += 2;
+                        updateProgress(complete);
+                        if (complete >= 100) {
+                            clearInterval(completeInterval);
+                            statusText.innerHTML = "Ready! Launching application...";
+                            statusSubtext.textContent = "Redirecting to dashboard";
+                            
+                            setTimeout(() => {
+                                loadingContainer.classList.add('fade-out');
+                                setTimeout(() => {
+                                    window.location.href = '/?loaded=true';
+                                }, 600);
+                            }, 500);
+                        }
+                    }, 50);
+                } else {
+                    throw new Error(data.message);
+                }
+                
+            } catch (error) {
+                console.error('Initialization error:', error);
+                statusText.innerHTML = "Connection timeout";
+                statusSubtext.textContent = "Please refresh the page to try again";
+                modelStatusSpan.textContent = "ERROR";
+                modelStatusSpan.style.color = "#f44336";
+            }
+        }
+        
         function updateProgress(value) {
             const roundedValue = Math.floor(value);
             percentageDisplay.textContent = `${roundedValue}%`;
             progressBar.style.width = `${value}%`;
             
-            // Update status messages based on progress
-            const messageIndex = Math.min(Math.floor(value / 17), statusMessages.length - 1);
-            if (messageIndex >= 0 && statusMessages[messageIndex]) {
-                statusText.innerHTML = `${statusMessages[messageIndex].main}<div class="loading-dots"><span></span><span></span><span></span></div>`;
-                statusSubtext.textContent = statusMessages[messageIndex].sub;
-            }
-        }
-
-        async function initialize() {
-            console.log("Initializing Shot Predictor Pro...");
-            createParticles();
-            showRandomFact();
-            
-            // Rotate facts every 4 seconds
-            const factInterval = setInterval(showRandomFact, 4000);
-            
-            // Animate progress bar smoothly
-            const startTime = Date.now();
-            const duration = 2500; // 2.5 seconds for smooth loading
-            
-            function animateProgress() {
-                const elapsed = Date.now() - startTime;
-                const newProgress = Math.min((elapsed / duration) * 100, 90);
-                progress = newProgress;
-                updateProgress(progress);
-                
-                if (progress < 90) {
-                    animationFrameId = requestAnimationFrame(animateProgress);
-                }
-            }
-            
-            animateProgress();
-            
-            try {
-                // Simulate API call (replace with actual fetch if needed)
-                await new Promise(resolve => setTimeout(resolve, duration));
-                
-                // Optional: Call your initialization endpoint
-                try {
-                    await fetch('/api/initialize', {
-                        method: 'GET',
-                        headers: {
-                            'Cache-Control': 'no-cache',
-                            'Pragma': 'no-cache'
-                        }
-                    });
-                } catch (e) {
-                    console.log("API endpoint not found, continuing...");
-                }
-                
-                // Complete the progress
-                if (animationFrameId) {
-                    cancelAnimationFrame(animationFrameId);
-                }
-                
-                // Animate to 100%
-                let complete = 90;
-                const completeInterval = setInterval(() => {
-                    complete += 2;
-                    updateProgress(complete);
-                    if (complete >= 100) {
-                        clearInterval(completeInterval);
-                        statusText.innerHTML = `Ready to Predict!`;
-                        statusSubtext.textContent = "Redirecting you to the dashboard...";
-                        
-                        setTimeout(() => {
-                            loadingContainer.classList.add('fade-out');
-                            setTimeout(() => {
-                                window.location.href = '/?loaded=true';
-                            }, 600);
-                        }, 500);
-                    }
-                }, 30);
-                
-                clearInterval(factInterval);
-                
-            } catch (error) {
-                console.error('Initialization error:', error);
-                statusText.innerHTML = `Connection Error`;
-                statusSubtext.textContent = "Please check your connection and refresh";
-                if (animationFrameId) {
-                    cancelAnimationFrame(animationFrameId);
-                }
+            if (value < 25) {
+                statusSubtext.textContent = "Allocating compute resources...";
+            } else if (value < 50) {
+                statusSubtext.textContent = "Initializing environment...";
+            } else if (value < 75) {
+                statusSubtext.textContent = "Loading ML model...";
+            } else if (value < 95) {
+                statusSubtext.textContent = "Finalizing setup...";
             }
         }
         
         // Handle page cache
         window.addEventListener('pageshow', function(event) {
             if (event.persisted) {
-                console.log('Page restored from cache, reloading...');
                 window.location.reload();
             }
         });
         
         // Start initialization
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initialize);
-        } else {
-            initialize();
-        }
+        initialize();
     </script>
 </body>
 </html>
