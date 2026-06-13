@@ -16,6 +16,7 @@
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
+            overflow-y: auto;
         }
 
         /* Full background image with overlay */
@@ -93,22 +94,6 @@
             padding: 35px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             transition: all 0.5s ease;
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-
-        .form-card::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .form-card::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        .form-card::-webkit-scrollbar-thumb {
-            background: #FF6B35;
-            border-radius: 10px;
         }
 
         .form-card.hide {
@@ -120,10 +105,6 @@
             margin-bottom: 30px;
             padding-bottom: 20px;
             border-bottom: 2px solid #FF6B35;
-            position: sticky;
-            top: 0;
-            background: rgba(255,255,255,0.98);
-            z-index: 10;
         }
 
         .form-header h1 {
@@ -157,6 +138,23 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .form-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .form-grid::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .form-grid::-webkit-scrollbar-thumb {
+            background: #FF6B35;
+            border-radius: 10px;
         }
 
         .full-width {
@@ -389,6 +387,7 @@
             
             .form-grid {
                 grid-template-columns: 1fr;
+                max-height: 50vh;
             }
             
             .full-width {
@@ -412,7 +411,7 @@
             }
         }
 
-        /* Scrollbar */
+        /* Scrollbar for body */
         ::-webkit-scrollbar {
             width: 10px;
         }
@@ -810,24 +809,41 @@
                 });
                 
                 const html = await response.text();
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = html;
                 
-                // Extract prediction text from response
-                const resultDiv = tempDiv.querySelector('.result');
-                let predictionText = 'No prediction available';
-                if (resultDiv) {
-                    predictionText = resultDiv.textContent;
-                } else if (tempDiv.innerHTML.includes('Shot Made')) {
-                    const match = tempDiv.innerHTML.match(/Shot Made[^<]*/);
-                    predictionText = match ? match[0] : '🏀 Shot Made';
-                } else if (tempDiv.innerHTML.includes('Shot Missed')) {
-                    const match = tempDiv.innerHTML.match(/Shot Missed[^<]*/);
-                    predictionText = match ? match[0] : '❌ Shot Missed';
+                // Extract prediction text properly
+                let predictionText = '';
+                
+                // Try to find the prediction text in different formats
+                if (html.includes('🏀 Shot Made') || html.includes('Shot Made')) {
+                    // Extract the full prediction text
+                    const madeMatch = html.match(/🏀 Shot Made[^<]*|Shot Made[^<]*/);
+                    if (madeMatch) {
+                        predictionText = madeMatch[0].trim();
+                    } else {
+                        predictionText = '🏀 Shot Made';
+                    }
+                } else if (html.includes('❌ Shot Missed') || html.includes('Shot Missed')) {
+                    const missMatch = html.match(/❌ Shot Missed[^<]*|Shot Missed[^<]*/);
+                    if (missMatch) {
+                        predictionText = missMatch[0].trim();
+                    } else {
+                        predictionText = '❌ Shot Missed';
+                    }
+                } else {
+                    // Try to find any result div content
+                    const resultMatch = html.match(/<div class="result">([^<]*)<\/div>/);
+                    if (resultMatch && resultMatch[1]) {
+                        predictionText = resultMatch[1].trim();
+                    } else {
+                        predictionText = 'Prediction received';
+                    }
                 }
                 
+                // Clean up the prediction text
+                predictionText = predictionText.replace(/<\/?[^>]+(>|$)/g, "").trim();
+                
                 // Display result based on prediction
-                const isMade = predictionText.includes('Made');
+                const isMade = predictionText.includes('Made') || predictionText.includes('🏀');
                 
                 resultContent.innerHTML = `
                     <div class="prediction-result ${isMade ? 'make' : 'miss'}">
@@ -874,7 +890,7 @@
         // Log successful load
         console.log("✅ Basketball Shot Predictor UI Loaded Successfully!");
         console.log("🎯 Kobe Bryant full background active");
-        console.log("📊 All categorical fields now use dropdowns with readable names");
+        console.log("📊 Scroll only on form grid, not on body");
     </script>
 </body>
 </html>
