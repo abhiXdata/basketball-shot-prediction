@@ -2,20 +2,14 @@ services:
   - type: web
     name: basketball-shot-predictor
     runtime: python
-    repo: https://github.com/YOUR_USERNAME/YOUR_REPO
     plan: free
     region: oregon
     buildCommand: |
-      pip install --upgrade pip
-      pip install -r requirements.txt
-    startCommand: gunicorn --timeout 120 --workers 2 app:app
+      python -m pip install --upgrade pip
+      python -m pip install --upgrade setuptools wheel
+      python -m pip install -r requirements.txt
+    startCommand: gunicorn --timeout 120 --workers 1 app:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.18
-      - key: FLASK_ENV
-        value: production
-      - key: SECRET_KEY
-        generateValue: true
     healthCheckPath: /api/status
-    autoDeploy: true
-    numInstances: 1
