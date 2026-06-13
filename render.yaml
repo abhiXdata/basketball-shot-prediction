@@ -5,11 +5,12 @@ services:
     plan: free
     region: oregon
     buildCommand: |
-      python -m pip install --upgrade pip
-      python -m pip install --upgrade setuptools wheel
-      python -m pip install -r requirements.txt
-    startCommand: gunicorn --timeout 120 --workers 1 app:app
+      python --version
+      pip install --upgrade pip setuptools wheel
+      pip install -r requirements.txt
+    startCommand: gunicorn --timeout 120 --workers 1 --log-level debug app:app
     envVars:
       - key: PYTHON_VERSION
-        value: 3.9.18
-    healthCheckPath: /api/status
+        value: 3.11.11
+      - key: PYTHONUNBUFFERED
+        value: true
