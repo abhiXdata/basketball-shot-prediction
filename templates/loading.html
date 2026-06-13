@@ -26,44 +26,33 @@
             overflow: hidden;
         }
 
-        /* Terminal-style background effect */
-        .terminal-bg {
+        .bg-particles {
             position: absolute;
             width: 100%;
             height: 100%;
-            background: 
-                repeating-linear-gradient(
-                    0deg,
-                    transparent,
-                    transparent 2px,
-                    rgba(0, 255, 0, 0.03) 2px,
-                    rgba(0, 255, 0, 0.03) 4px
-                );
-            pointer-events: none;
+            overflow: hidden;
         }
 
-        /* Animated grid */
-        .grid {
+        .particle {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(255,107,53,0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,107,53,0.05) 1px, transparent 1px);
-            background-size: 30px 30px;
-            animation: gridMove 20s linear infinite;
+            background: rgba(255, 107, 53, 0.1);
+            border-radius: 50%;
+            animation: float linear infinite;
         }
 
-        @keyframes gridMove {
+        @keyframes float {
             0% {
-                transform: translate(0, 0);
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
             }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
             100% {
-                transform: translate(30px, 30px);
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
             }
         }
 
-        /* Main container */
         .loading-container {
             position: relative;
             z-index: 2;
@@ -85,20 +74,14 @@
             }
         }
 
-        /* Brand section */
         .brand {
             margin-bottom: 35px;
-        }
-
-        .logo-wrapper {
-            margin-bottom: 20px;
-            position: relative;
-            display: inline-block;
         }
 
         .logo {
             width: 85px;
             height: 85px;
+            margin: 0 auto 20px;
             background: linear-gradient(135deg, #FF6B35, #FF8C42);
             border-radius: 25px;
             display: flex;
@@ -110,37 +93,8 @@
         }
 
         @keyframes logoGlow {
-            0%, 100% {
-                box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
-            }
-            50% {
-                box-shadow: 0 15px 40px rgba(255, 107, 53, 0.6);
-            }
-        }
-
-        .logo-pulse {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 120px;
-            height: 120px;
-            background: rgba(255, 107, 53, 0.2);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            animation: pulseRing 1.5s ease-out infinite;
-        }
-
-        @keyframes pulseRing {
-            0% {
-                width: 85px;
-                height: 85px;
-                opacity: 0.5;
-            }
-            100% {
-                width: 150px;
-                height: 150px;
-                opacity: 0;
-            }
+            0%, 100% { box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3); }
+            50% { box-shadow: 0 15px 40px rgba(255, 107, 53, 0.6); }
         }
 
         .brand h1 {
@@ -154,10 +108,8 @@
         .brand p {
             color: rgba(255,255,255,0.5);
             font-size: 13px;
-            font-weight: 400;
         }
 
-        /* Server status card */
         .server-status {
             background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(10px);
@@ -165,12 +117,11 @@
             padding: 15px 20px;
             margin-bottom: 25px;
             border: 1px solid rgba(255, 107, 53, 0.2);
-            font-family: 'Courier New', monospace;
+            font-family: monospace;
         }
 
         .status-line {
             display: flex;
-            align-items: center;
             justify-content: space-between;
             margin-bottom: 8px;
             font-size: 12px;
@@ -179,25 +130,21 @@
         .status-label {
             color: rgba(255,255,255,0.6);
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         .status-value {
-            color: #4CAF50;
+            color: #FF8C42;
             font-weight: 600;
         }
 
-        .status-value.loading {
-            color: #FF8C42;
-            animation: blink 1s infinite;
+        .status-value.success {
+            color: #4CAF50;
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .status-value.error {
+            color: #f44336;
         }
 
-        /* Progress section */
         .progress-section {
             background: rgba(255,255,255,0.05);
             backdrop-filter: blur(10px);
@@ -212,10 +159,8 @@
             justify-content: space-between;
             margin-bottom: 12px;
             font-size: 12px;
-            font-weight: 500;
             color: rgba(255,255,255,0.7);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .progress-bar-container {
@@ -232,7 +177,7 @@
             height: 100%;
             background: linear-gradient(90deg, #FF6B35, #FF8C42);
             border-radius: 10px;
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.3s ease;
             position: relative;
         }
 
@@ -243,10 +188,7 @@
             left: 0;
             bottom: 0;
             right: 0;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(255,255,255,0.3), 
-                transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
             animation: shimmer 1.5s infinite;
         }
 
@@ -276,46 +218,26 @@
             color: transparent;
         }
 
-        /* Console log simulation */
-        .console-logs {
-            background: rgba(0, 0, 0, 0.8);
-            border-radius: 12px;
-            padding: 15px;
+        .retry-button {
             margin-top: 20px;
-            text-align: left;
-            font-family: 'Courier New', monospace;
-            font-size: 11px;
-            max-height: 150px;
-            overflow-y: auto;
-            border: 1px solid rgba(255,107,53,0.3);
+            padding: 10px 20px;
+            background: rgba(255,107,53,0.2);
+            border: 1px solid #FF6B35;
+            border-radius: 10px;
+            color: #FF6B35;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
         }
 
-        .log-entry {
-            color: #4CAF50;
-            margin-bottom: 5px;
-            padding-left: 10px;
-            border-left: 2px solid #FF6B35;
-            opacity: 0;
-            animation: logFadeIn 0.3s ease-out forwards;
+        .retry-button:hover {
+            background: #FF6B35;
+            color: white;
+            transform: translateY(-2px);
         }
 
-        @keyframes logFadeIn {
-            from {
-                opacity: 0;
-                transform: translateX(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .log-time {
-            color: rgba(255,255,255,0.4);
-            margin-right: 10px;
-        }
-
-        /* Facts section */
         .facts-section {
             margin-top: 20px;
             padding: 15px;
@@ -327,11 +249,9 @@
         .fact-text {
             color: rgba(255,255,255,0.8);
             font-size: 13px;
-            font-weight: 400;
             line-height: 1.5;
         }
 
-        /* Loading dots */
         .loading-dots {
             display: inline-flex;
             gap: 4px;
@@ -343,7 +263,7 @@
             height: 4px;
             background: #FF6B35;
             border-radius: 50%;
-            animation: dotPulse 1.4s ease-in-out infinite;
+            animation: dotPulse 1.4s infinite;
         }
 
         .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
@@ -354,17 +274,15 @@
             50% { opacity: 1; transform: scale(1.2); }
         }
 
-        /* Fade out */
         .fade-out {
             animation: fadeOutPage 0.6s ease-out forwards;
         }
 
         @keyframes fadeOutPage {
-            from { opacity: 1; visibility: visible; }
+            from { opacity: 1; }
             to { opacity: 0; visibility: hidden; }
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .loading-container { padding: 20px; }
             .progress-section { padding: 20px; }
@@ -375,32 +293,27 @@
     </style>
 </head>
 <body>
-    <div class="terminal-bg"></div>
-    <div class="grid"></div>
+    <div class="bg-particles" id="particles"></div>
 
     <div class="loading-container" id="loadingContainer">
         <div class="brand">
-            <div class="logo-wrapper">
-                <div class="logo-pulse"></div>
-                <div class="logo">🏀</div>
-            </div>
+            <div class="logo">🏀</div>
             <h1>Shot Predictor Pro</h1>
             <p>Advanced Basketball Analytics Platform</p>
         </div>
 
-        <!-- Render-style server status -->
         <div class="server-status">
             <div class="status-line">
                 <span class="status-label">🚀 SERVER STATUS</span>
-                <span class="status-value" id="serverStatus">PROVISIONING</span>
-            </div>
-            <div class="status-line">
-                <span class="status-label">⚡ RENDER INSTANCE</span>
-                <span class="status-value" id="instanceStatus">WAKING UP...</span>
+                <span class="status-value" id="serverStatus">Starting...</span>
             </div>
             <div class="status-line">
                 <span class="status-label">🎯 MODEL STATUS</span>
-                <span class="status-value" id="modelStatus">INITIALIZING</span>
+                <span class="status-value" id="modelStatus">Initializing</span>
+            </div>
+            <div class="status-line">
+                <span class="status-label">⏱️ LOAD TIME</span>
+                <span class="status-value" id="loadTime">--</span>
             </div>
         </div>
 
@@ -413,22 +326,15 @@
                 <div class="progress-bar" id="progressBar"></div>
             </div>
             <div class="status-text" id="statusText">
-                Connecting to Render servers
+                Starting server
                 <div class="loading-dots"><span></span><span></span><span></span></div>
             </div>
-            <div class="status-subtext" id="statusSubtext">Allocating compute resources...</div>
-        </div>
-
-        <!-- Console-style logs -->
-        <div class="console-logs" id="consoleLogs">
-            <div class="log-entry">
-                <span class="log-time">[12:25:12]</span> INCOMING HTTP REQUEST DETECTED...
-            </div>
+            <div class="status-subtext" id="statusSubtext">Preparing your experience...</div>
         </div>
 
         <div class="facts-section">
             <div class="fact-text" id="factText">
-                ⚡ Loading interesting basketball facts...
+                ⚡ Loading interesting facts...
             </div>
         </div>
     </div>
@@ -436,79 +342,42 @@
     <script>
         const basketballFacts = [
             { fact: "The NBA three-point line is 23.75 feet from the basket at its furthest point", icon: "🎯" },
-            { fact: "Michael Jordan scored 63 points in a playoff game against the Celtics (1986)", icon: "👑" },
-            { fact: "Stephen Curry made 402 three-pointers in a single season (2015-16)", icon: "🏆" },
-            { fact: "The fastest triple-double was achieved by Nikola Jokić in 14 minutes and 33 seconds", icon: "⚡" },
+            { fact: "Michael Jordan scored 63 points in a playoff game against the Celtics", icon: "👑" },
+            { fact: "Stephen Curry made 402 three-pointers in a single season", icon: "🏆" },
             { fact: "Wilt Chamberlain once averaged 50.4 points per game for an entire season", icon: "💯" },
             { fact: "LeBron James is the all-time leading scorer in NBA history", icon: "👑" },
             { fact: "The shortest NBA player was Tyrone 'Muggsy' Bogues at 5'3\"", icon: "📏" },
-            { fact: "Kobe Bryant scored 81 points in a single game (2nd most all-time)", icon: "🐍" }
+            { fact: "Kobe Bryant scored 81 points in a single game", icon: "🐍" },
+            { fact: "The record for most assists in a game is 30 by Scott Skiles", icon: "🎯" }
         ];
 
         let progress = 0;
-        let logs = [];
-        let logIndex = 0;
-        let serverCheckInterval;
+        let retryCount = 0;
+        let startTime = Date.now();
         
-        const renderLogs = [
-            "[12:25:12] INCOMING HTTP REQUEST DETECTED...",
-            "[12:25:15] SERVICE WAKING UP ...",
-            "[12:25:19] ALLOCATING COMPUTE RESOURCES ...",
-            "[12:25:22] PREPARING INSTANCE FOR INITIALIZATION ...",
-            "[12:25:26] STARTING THE INSTANCE ...",
-            "[12:25:32] ENVIRONMENT VARIABLES INJECTED ...",
-            "[12:25:34] FINALIZING STARTUP ...",
-            "[12:25:36] OPTIMIZING DEPLOYMENT ...",
-            "[12:25:38] LOADING ML MODEL ...",
-            "[12:25:42] MODEL INITIALIZED SUCCESSFULLY",
-            "[12:25:45] READY TO PREDICT!"
-        ];
-
         const progressBar = document.getElementById('progressBar');
         const statusText = document.getElementById('statusText');
         const statusSubtext = document.getElementById('statusSubtext');
         const loadingContainer = document.getElementById('loadingContainer');
         const factText = document.getElementById('factText');
         const percentageDisplay = document.getElementById('percentageDisplay');
-        const consoleLogs = document.getElementById('consoleLogs');
         const serverStatusSpan = document.getElementById('serverStatus');
-        const instanceStatusSpan = document.getElementById('instanceStatus');
         const modelStatusSpan = document.getElementById('modelStatus');
+        const loadTimeSpan = document.getElementById('loadTime');
 
-        function addLog(message) {
-            const logDiv = document.createElement('div');
-            logDiv.className = 'log-entry';
-            logDiv.innerHTML = message;
-            consoleLogs.appendChild(logDiv);
-            consoleLogs.scrollTop = consoleLogs.scrollHeight;
-        }
-
-        function addRenderLog(index) {
-            if (index < renderLogs.length) {
-                addLog(renderLogs[index]);
-                
-                // Update status based on log index
-                if (index === 1) instanceStatusSpan.textContent = "WAKING UP...";
-                if (index === 3) instanceStatusSpan.textContent = "INITIALIZING";
-                if (index === 5) serverStatusSpan.textContent = "STARTING";
-                if (index === 6) serverStatusSpan.textContent = "CONFIGURING";
-                if (index === 8) {
-                    modelStatusSpan.textContent = "LOADING";
-                    statusText.innerHTML = "Loading AI Model";
-                    statusSubtext.textContent = "Initializing neural networks...";
-                }
-                if (index === 9) {
-                    modelStatusSpan.textContent = "READY";
-                    modelStatusSpan.style.color = "#4CAF50";
-                }
-                if (index === 10) {
-                    serverStatusSpan.textContent = "ONLINE";
-                    instanceStatusSpan.textContent = "ACTIVE";
-                }
-                
-                return true;
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const size = Math.random() * 3 + 1;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.animationDuration = `${Math.random() * 10 + 8}s`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                particlesContainer.appendChild(particle);
             }
-            return false;
         }
 
         function showRandomFact() {
@@ -517,114 +386,126 @@
             factText.innerHTML = `${fact.icon} ${fact.fact}`;
         }
 
-        async function checkServerStatus() {
-            try {
-                const response = await fetch('/api/status');
-                const data = await response.json();
-                
-                if (data.model_ready) {
-                    modelStatusSpan.textContent = "LOADED";
-                    modelStatusSpan.style.color = "#4CAF50";
-                    return true;
-                } else if (data.status === 'loading') {
-                    modelStatusSpan.textContent = "LOADING...";
-                    modelStatusSpan.className = "status-value loading";
-                }
-                return false;
-            } catch (error) {
-                console.log("Server not ready yet");
-                return false;
-            }
-        }
-
-        async function initialize() {
-            showRandomFact();
-            const factInterval = setInterval(showRandomFact, 4000);
-            
-            // Add Render-style logs sequentially
-            let logCounter = 0;
-            const logInterval = setInterval(() => {
-                if (logCounter < renderLogs.length) {
-                    addRenderLog(logCounter);
-                    logCounter++;
-                    
-                    // Update progress
-                    progress = (logCounter / renderLogs.length) * 90;
-                    updateProgress(progress);
-                } else {
-                    clearInterval(logInterval);
-                }
-            }, 800);
-            
-            // Check server status periodically
-            serverCheckInterval = setInterval(async () => {
-                const isReady = await checkServerStatus();
-                if (isReady) {
-                    clearInterval(serverCheckInterval);
-                }
-            }, 1000);
-            
-            try {
-                // Wait for model to be ready via API
-                const response = await fetch('/api/initialize');
-                const data = await response.json();
-                
-                clearInterval(logInterval);
-                clearInterval(factInterval);
-                clearInterval(serverCheckInterval);
-                
-                if (data.status === 'success') {
-                    // Complete the progress
-                    let complete = progress;
-                    const completeInterval = setInterval(() => {
-                        complete += 2;
-                        updateProgress(complete);
-                        if (complete >= 100) {
-                            clearInterval(completeInterval);
-                            statusText.innerHTML = "Ready! Launching application...";
-                            statusSubtext.textContent = "Redirecting to dashboard";
-                            
-                            setTimeout(() => {
-                                loadingContainer.classList.add('fade-out');
-                                setTimeout(() => {
-                                    window.location.href = '/?loaded=true';
-                                }, 600);
-                            }, 500);
-                        }
-                    }, 50);
-                } else {
-                    throw new Error(data.message);
-                }
-                
-            } catch (error) {
-                console.error('Initialization error:', error);
-                statusText.innerHTML = "Connection timeout";
-                statusSubtext.textContent = "Please refresh the page to try again";
-                modelStatusSpan.textContent = "ERROR";
-                modelStatusSpan.style.color = "#f44336";
-            }
-        }
-        
         function updateProgress(value) {
             const roundedValue = Math.floor(value);
             percentageDisplay.textContent = `${roundedValue}%`;
             progressBar.style.width = `${value}%`;
             
-            if (value < 25) {
-                statusSubtext.textContent = "Allocating compute resources...";
-            } else if (value < 50) {
-                statusSubtext.textContent = "Initializing environment...";
-            } else if (value < 75) {
-                statusSubtext.textContent = "Loading ML model...";
-            } else if (value < 95) {
-                statusSubtext.textContent = "Finalizing setup...";
+            if (value < 30) {
+                statusSubtext.textContent = "Waking up server from cold start...";
+            } else if (value < 60) {
+                statusSubtext.textContent = "Loading machine learning model...";
+            } else if (value < 90) {
+                statusSubtext.textContent = "Initializing prediction engine...";
+            } else {
+                statusSubtext.textContent = "Almost ready...";
+            }
+        }
+
+        async function checkModelStatus() {
+            try {
+                const response = await fetch('/api/status', {
+                    headers: { 'Cache-Control': 'no-cache' }
+                });
+                const data = await response.json();
+                
+                const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(1);
+                loadTimeSpan.textContent = `${elapsedTime}s`;
+                
+                if (data.model_ready) {
+                    modelStatusSpan.textContent = "LOADED";
+                    modelStatusSpan.className = "status-value success";
+                    serverStatusSpan.textContent = "ONLINE";
+                    serverStatusSpan.className = "status-value success";
+                    return true;
+                } else if (data.status === 'error') {
+                    modelStatusSpan.textContent = "ERROR";
+                    modelStatusSpan.className = "status-value error";
+                    statusText.innerHTML = "Model loading failed";
+                    statusSubtext.textContent = data.error || "Please refresh the page";
+                    return false;
+                } else {
+                    modelStatusSpan.textContent = "LOADING...";
+                    modelStatusSpan.className = "status-value";
+                    serverStatusSpan.textContent = "INITIALIZING";
+                    return false;
+                }
+            } catch (error) {
+                console.log("Server not ready yet:", error);
+                return false;
+            }
+        }
+
+        async function initialize() {
+            createParticles();
+            showRandomFact();
+            const factInterval = setInterval(showRandomFact, 4000);
+            
+            // Animate progress bar while waiting
+            const progressInterval = setInterval(() => {
+                if (progress < 90) {
+                    progress += Math.random() * 5;
+                    progress = Math.min(progress, 90);
+                    updateProgress(progress);
+                }
+            }, 500);
+            
+            let isReady = false;
+            let attempts = 0;
+            const maxAttempts = 60; // 60 seconds max wait
+            
+            while (!isReady && attempts < maxAttempts) {
+                isReady = await checkModelStatus();
+                
+                if (!isReady) {
+                    attempts++;
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // Update status text based on attempts
+                    if (attempts > 10) {
+                        statusText.innerHTML = "Server is waking up (cold start)";
+                        statusSubtext.textContent = "This may take up to 60 seconds on free tier";
+                    } else if (attempts > 5) {
+                        statusText.innerHTML = "Loading model from disk";
+                        statusSubtext.textContent = "Please wait, model is being loaded...";
+                    }
+                }
+            }
+            
+            clearInterval(progressInterval);
+            clearInterval(factInterval);
+            
+            if (isReady) {
+                // Complete the progress
+                let complete = progress;
+                const completeInterval = setInterval(() => {
+                    complete += 2;
+                    updateProgress(complete);
+                    if (complete >= 100) {
+                        clearInterval(completeInterval);
+                        statusText.innerHTML = "Ready! Launching application...";
+                        statusSubtext.textContent = "Redirecting to dashboard";
+                        
+                        setTimeout(() => {
+                            loadingContainer.classList.add('fade-out');
+                            setTimeout(() => {
+                                window.location.href = '/?loaded=true';
+                            }, 600);
+                        }, 500);
+                    }
+                }, 50);
+            } else {
+                // Show retry button
+                statusText.innerHTML = "Connection timeout";
+                statusSubtext.innerHTML = 'The server is taking longer than expected. <br> <span class="retry-button" onclick="location.reload()">🔄 Retry Connection</span>';
+                statusSubtext.style.cursor = "pointer";
             }
         }
         
         // Handle page cache
         window.addEventListener('pageshow', function(event) {
             if (event.persisted) {
-                window.location.reload();
+                location.reload();
             }
         });
         
