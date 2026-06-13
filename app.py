@@ -4,31 +4,42 @@ import pickle
 import time
 import threading
 import os
+import sys
 
 app = Flask(__name__)
 
 # Global flag for model loading status
 model = None
-model_loading_status = "not_started"  # not_started, loading, loaded, error
+model_loading_status = "not_started"
 model_loading_error = None
+model_load_time = None
 
-# Load model in background to not block startup
-def load_model_async():
-    global model, model_loading_status, model_loading_error
+# Load model synchronously but with timeout
+def load_model():
+    global model, model_loading_status, model_loading_error, model_load_time
+    
     try:
         model_loading_status = "loading"
-        print("⏳ Loading model in background...")
-        time.sleep(1)  # Simulate loading time (remove in production)
+        print("⏳ Loading model from model.pkl...")
+        model_load_time = time.time()
+        
+        # Check if model file exists
+        if not os.path.exists('model.pkl'):
+            raise FileNotFoundError("model.pkl not found. Please ensure the model file is uploaded.")
+        
+        # Load the model
         model = pickle.load(open('model.pkl', 'rb'))
         model_loading_status = "loaded"
-        print("✅ Model loaded successfully!")
+        print(f"✅ Model loaded successfully in {time.time() - model_load_time:.2f} seconds!")
+        
     except Exception as e:
         model_loading_status = "error"
         model_loading_error = str(e)
         print(f"❌ Error loading model: {e}")
 
-# Start loading model in background thread
-threading.Thread(target=load_model_async, daemon=True).start()
+# Load model in background thread (non-blocking)
+thread = threading.Thread(target=load_model, daemon=True)
+thread.start()
 
 @app.route('/favicon.ico')
 def favicon():
@@ -36,7 +47,7 @@ def favicon():
 
 @app.route('/')
 def index():
-    """Main route - always shows loading first"""
+    """Main route - always shows loading screen first"""
     loaded = request.args.get('loaded', 'false')
     
     if loaded == 'true':
@@ -45,40 +56,27 @@ def index():
             return render_template('index.html')
         else:
             # Model not ready yet, show loading with status
-            return render_template('loading.html', server_status=model_loading_status)
+            return render_template('loading.html')
     else:
         # First load - show loading screen
-        return render_template('loading.html', server_status=model_loading_status)
+        return render_template('loading.html')
 
 @app.route('/api/status', methods=['GET'])
 def get_status():
-    """Check server and model initialization status"""
+    """Quick status check - returns immediately"""
     global model, model_loading_status, model_loading_error
     
     return jsonify({
         'status': model_loading_status,
         'model_ready': model is not None,
-        'error': model_loading_error,
+        'error': model_loading_error if model_loading_status == 'error' else None,
         'server_ready': True
     })
 
 @app.route('/api/initialize', methods=['GET'])
 def initialize():
-    """Wait for model to load and return status"""
+    """Non-blocking initialization check - returns immediately"""
     global model, model_loading_status
-    
-    # Wait for model to load (max 30 seconds)
-    timeout = 30
-    start_time = time.time()
-    
-    while model is None and (time.time() - start_time) < timeout:
-        if model_loading_status == "error":
-            return jsonify({
-                'status': 'error',
-                'message': model_loading_error,
-                'ready': False
-            }), 500
-        time.sleep(0.5)
     
     if model is not None:
         return jsonify({
@@ -86,12 +84,18 @@ def initialize():
             'message': 'Model ready',
             'ready': True
         })
+    elif model_loading_status == 'error':
+        return jsonify({
+            'status': 'error',
+            'message': model_loading_error,
+            'ready': False
+        })
     else:
         return jsonify({
-            'status': 'timeout',
-            'message': 'Model loading timeout',
+            'status': 'loading',
+            'message': 'Model is still loading',
             'ready': False
-        }), 504
+        })
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -100,7 +104,7 @@ def predict():
     if model is None:
         return render_template(
             'index.html',
-            prediction_text="⚠️ Model is still loading. Please wait a moment and try again."
+            prediction_text="⚠️ Model is still loading. Please wait a moment and refresh the page."
         )
     
     try:
