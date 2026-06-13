@@ -13,13 +13,12 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
         }
 
-        /* Animated basketball court background */
+        /* Background image with overlay */
         body::before {
             content: '';
             position: fixed;
@@ -27,20 +26,35 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-image: 
-                radial-gradient(circle at 20% 50%, rgba(255,107,53,0.05) 2%, transparent 2.5%),
-                repeating-linear-gradient(45deg, rgba(255,107,53,0.02) 0px, rgba(255,107,53,0.02) 2px, transparent 2px, transparent 8px);
-            background-size: 30px 30px, 8px 8px;
-            pointer-events: none;
+            background-image: url('/static/image/kobe-bryant.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            filter: brightness(0.3) contrast(1.2);
+            z-index: -2;
+        }
+
+        /* Additional gradient overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 100%);
+            z-index: -1;
         }
 
         /* Floating particles */
         .particle {
             position: fixed;
-            background: rgba(255,107,53,0.1);
+            background: rgba(255,107,53,0.15);
             border-radius: 50%;
             pointer-events: none;
             animation: floatParticle linear infinite;
+            z-index: 0;
         }
 
         @keyframes floatParticle {
@@ -78,7 +92,7 @@
             backdrop-filter: blur(10px);
             border-radius: 30px;
             padding: 35px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             border: 1px solid rgba(255,255,255,0.2);
         }
 
@@ -105,6 +119,14 @@
         .form-header p {
             color: #666;
             font-size: 0.9rem;
+        }
+
+        .kobe-tribute {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #FF6B35;
+            font-weight: 600;
         }
 
         /* Form grid layout */
@@ -144,6 +166,7 @@
             font-size: 14px;
             transition: all 0.3s ease;
             font-family: inherit;
+            background: white;
         }
 
         .input-group input:focus, .input-group select:focus {
@@ -190,7 +213,7 @@
 
         .predict-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(255,107,53,0.3);
+            box-shadow: 0 10px 20px rgba(255,107,53,0.4);
         }
 
         /* Right side - Result card */
@@ -199,7 +222,7 @@
             backdrop-filter: blur(10px);
             border-radius: 30px;
             padding: 35px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             border: 1px solid rgba(255,255,255,0.2);
             position: sticky;
             top: 40px;
@@ -218,6 +241,12 @@
         .result-header .basketball-icon {
             font-size: 50px;
             margin-bottom: 10px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
         .prediction-result {
@@ -231,16 +260,28 @@
         .prediction-result.make {
             background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
+            animation: glowGreen 1s ease-in-out;
         }
 
         .prediction-result.miss {
             background: linear-gradient(135deg, #f44336, #da190b);
             color: white;
+            animation: glowRed 1s ease-in-out;
         }
 
         .prediction-result.placeholder {
-            background: #f5f5f5;
+            background: rgba(245,245,245,0.9);
             color: #999;
+        }
+
+        @keyframes glowGreen {
+            0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.5); }
+            100% { box-shadow: 0 0 0 20px rgba(76, 175, 80, 0); }
+        }
+
+        @keyframes glowRed {
+            0% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.5); }
+            100% { box-shadow: 0 0 0 20px rgba(244, 67, 54, 0); }
         }
 
         .prediction-text {
@@ -268,6 +309,29 @@
             border-radius: 50%;
             position: relative;
             transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            cursor: pointer;
+        }
+
+        .basketball-animation::before,
+        .basketball-animation::after {
+            content: '';
+            position: absolute;
+            background-color: #2C1810;
+            border-radius: 50%;
+        }
+
+        .basketball-animation::before {
+            width: 100%;
+            height: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .basketball-animation::after {
+            width: 4px;
+            height: 100%;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .basketball-animation.make {
@@ -308,8 +372,9 @@
         .footer {
             text-align: center;
             margin-top: 30px;
-            color: rgba(255,255,255,0.6);
+            color: rgba(255,255,255,0.8);
             font-size: 0.8rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
 
         /* Loading state for button */
@@ -369,6 +434,10 @@
             .form-header h1 {
                 font-size: 1.5rem;
             }
+            
+            .prediction-text {
+                font-size: 1.2rem;
+            }
         }
 
         /* Scrollbar styling */
@@ -377,7 +446,7 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: rgba(255,255,255,0.1);
             border-radius: 10px;
         }
 
@@ -394,7 +463,8 @@
             <div class="form-card">
                 <div class="form-header">
                     <h1>🏀 <span>Shot Predictor Pro</span></h1>
-                    <p>Enter shot parameters for AI-powered prediction</p>
+                    <p>Powered by Advanced Machine Learning</p>
+                    <div class="kobe-tribute">"Mamba Mentality" - Kobe Bryant</div>
                 </div>
 
                 <form action="/predict" method="POST" id="predictionForm">
@@ -532,14 +602,14 @@
         </div>
 
         <div class="footer">
-            <p>Powered by Advanced Machine Learning | NBA Shot Analytics</p>
+            <p>🏀 Powered by Machine Learning | Mamba Mentality | NBA Shot Analytics 🏀</p>
         </div>
     </div>
 
     <script>
         // Create floating particles
         function createParticles() {
-            const particleCount = 30;
+            const particleCount = 40;
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
@@ -560,12 +630,28 @@
             btn.textContent = ' Analyzing Shot...';
         });
 
+        // Add animation to result when page loads with prediction
+        window.addEventListener('load', function() {
+            const result = document.querySelector('.prediction-result');
+            if (result && (result.classList.contains('make') || result.classList.contains('miss'))) {
+                result.style.animation = 'none';
+                setTimeout(() => {
+                    if (result.classList.contains('make')) {
+                        result.style.animation = 'glowGreen 1s ease-in-out';
+                    } else if (result.classList.contains('miss')) {
+                        result.style.animation = 'glowRed 1s ease-in-out';
+                    }
+                }, 10);
+            }
+        });
+
         // Create background particles
         createParticles();
 
         // Log successful load
         console.log("✅ Basketball Shot Predictor UI Loaded Successfully!");
-        console.log("All 15 input fields are ready");
+        console.log("🎯 Kobe Bryant tribute background active");
+        console.log("📊 All 15 input fields are ready");
     </script>
 </body>
 </html>
