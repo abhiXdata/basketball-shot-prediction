@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basketball Shot Predictor | Pro Analytics</title>
+    <title>Basketball Shot Predictor | Mamba Mentality</title>
     <style>
         * {
             margin: 0;
@@ -16,84 +16,65 @@
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
+            background: #0a0a0a;
         }
 
-        /* Background image with overlay */
-        body::before {
-            content: '';
+        /* Right side - Kobe Bryant Image */
+        .kobe-sidebar {
             position: fixed;
-            top: 0;
-            left: 0;
             right: 0;
-            bottom: 0;
+            top: 0;
+            width: 50%;
+            height: 100vh;
             background-image: url('{{ url_for('static', filename='image/kobe-bryant.png') }}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            background-attachment: fixed;
-            filter: brightness(0.3) contrast(1.2);
-            z-index: -2;
+            z-index: 0;
         }
 
-        /* Additional gradient overlay */
-        body::after {
+        /* Dark overlay on image for better text contrast */
+        .kobe-sidebar::before {
             content: '';
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 100%);
-            z-index: -1;
+            background: linear-gradient(135deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 100%);
+            z-index: 1;
         }
 
-        /* Floating particles */
-        .particle {
-            position: fixed;
-            background: rgba(255,107,53,0.15);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: floatParticle linear infinite;
-            z-index: 0;
-        }
-
-        @keyframes floatParticle {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% { opacity: 0.5; }
-            90% { opacity: 0.5; }
-            100% {
-                transform: translateY(-100vh) rotate(360deg);
-                opacity: 0;
-            }
+        /* Left side - Content */
+        .content-wrapper {
+            position: relative;
+            z-index: 2;
+            width: 50%;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 600px;
+            width: 100%;
             margin: 0 auto;
-            padding: 40px;
-            position: relative;
-            z-index: 2;
         }
 
-        /* Two column layout */
-        .split-layout {
-            display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 30px;
-            align-items: start;
-        }
-
-        /* Main form card - left side */
+        /* Form Card */
         .form-card {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.98);
             border-radius: 30px;
             padding: 35px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.5s ease;
+        }
+
+        .form-card.hide {
+            display: none;
         }
 
         .form-header {
@@ -216,47 +197,17 @@
             box-shadow: 0 10px 20px rgba(255,107,53,0.4);
         }
 
-        /* Right side - Result card */
+        /* Result Card */
         .result-card {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.98);
             border-radius: 30px;
             padding: 35px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.2);
-            position: sticky;
-            top: 40px;
-        }
-
-        .result-header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .result-header h2 {
-            color: #333;
-            font-size: 1.5rem;
-        }
-
-        .result-header .basketball-icon {
-            font-size: 60px;
-            margin-bottom: 10px;
-            animation: pulse 2s ease-in-out infinite;
-            display: inline-block;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        /* Result container with hide/show */
-        .result-container {
             display: none;
             animation: slideIn 0.5s ease-out;
         }
 
-        .result-container.show {
+        .result-card.show {
             display: block;
         }
 
@@ -271,109 +222,80 @@
             }
         }
 
+        .result-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .result-header h2 {
+            color: #333;
+            font-size: 1.5rem;
+        }
+
         .prediction-result {
             text-align: center;
-            padding: 25px;
+            padding: 30px;
             border-radius: 20px;
             margin-bottom: 20px;
-            transition: all 0.3s ease;
         }
 
         .prediction-result.make {
             background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
-            animation: glowGreen 1s ease-in-out;
         }
 
         .prediction-result.miss {
             background: linear-gradient(135deg, #f44336, #da190b);
             color: white;
-            animation: glowRed 1s ease-in-out;
-        }
-
-        .prediction-result.placeholder {
-            background: rgba(245,245,245,0.9);
-            color: #999;
-        }
-
-        @keyframes glowGreen {
-            0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.5); }
-            100% { box-shadow: 0 0 0 20px rgba(76, 175, 80, 0); }
-        }
-
-        @keyframes glowRed {
-            0% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.5); }
-            100% { box-shadow: 0 0 0 20px rgba(244, 67, 54, 0); }
         }
 
         .prediction-text {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: bold;
             margin-bottom: 15px;
         }
 
         .confidence {
-            font-size: 1rem;
+            font-size: 1.1rem;
             opacity: 0.95;
         }
 
         .shot-visual {
             text-align: center;
-            margin-top: 20px;
-            padding: 20px;
+            margin: 30px 0;
         }
 
         .basketball-emoji {
-            font-size: 100px;
+            font-size: 120px;
             display: inline-block;
+            animation: bounce 1s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+        }
+
+        .back-btn {
+            width: 100%;
+            padding: 14px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
+            margin-top: 20px;
         }
 
-        .basketball-emoji.make {
-            animation: swishEmoji 1s ease-out;
+        .back-btn:hover {
+            background: #555;
+            transform: translateY(-2px);
         }
 
-        .basketball-emoji.miss {
-            animation: bounceEmoji 0.8s ease-out;
-        }
-
-        @keyframes swishEmoji {
-            0% {
-                transform: translateY(0) scale(1);
-            }
-            50% {
-                transform: translateY(-80px) scale(1.2);
-            }
-            100% {
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        @keyframes bounceEmoji {
-            0% {
-                transform: translateX(0);
-            }
-            25% {
-                transform: translateX(-40px) rotate(-20deg);
-            }
-            75% {
-                transform: translateX(40px) rotate(20deg);
-            }
-            100% {
-                transform: translateX(0);
-            }
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            color: rgba(255,255,255,0.8);
-            font-size: 0.8rem;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        }
-
-        /* Loading state for button */
+        /* Loading state */
         .predict-btn.loading {
             opacity: 0.7;
             cursor: not-allowed;
@@ -398,36 +320,28 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Empty state */
-        .empty-state {
+        .loading-spinner {
             text-align: center;
-            padding: 40px 20px;
+            padding: 40px;
         }
 
-        .empty-state .basketball-emoji {
-            font-size: 80px;
-            opacity: 0.5;
-            margin-bottom: 20px;
+        .loading-spinner .basketball-emoji {
+            animation: pulse 1s infinite;
         }
 
-        .empty-state p {
-            color: #999;
-            font-size: 1rem;
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
         /* Responsive design */
-        @media (max-width: 1024px) {
-            .split-layout {
-                grid-template-columns: 1fr;
+        @media (max-width: 968px) {
+            .kobe-sidebar {
+                display: none;
             }
             
-            .result-card {
-                position: static;
-                margin-top: 30px;
-            }
-            
-            .container {
-                padding: 20px;
+            .content-wrapper {
+                width: 100%;
             }
         }
 
@@ -440,7 +354,7 @@
                 grid-column: span 1;
             }
             
-            .form-card {
+            .form-card, .result-card {
                 padding: 25px;
             }
             
@@ -449,15 +363,15 @@
             }
             
             .prediction-text {
-                font-size: 1.2rem;
+                font-size: 1.3rem;
             }
             
             .basketball-emoji {
-                font-size: 60px;
+                font-size: 80px;
             }
         }
 
-        /* Scrollbar styling */
+        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 10px;
         }
@@ -474,26 +388,32 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="split-layout">
-            <!-- Left side - Form Card -->
-            <div class="form-card">
+    <!-- Right side - Kobe Bryant Image -->
+    <div class="kobe-sidebar"></div>
+
+    <!-- Left side - Content -->
+    <div class="content-wrapper">
+        <div class="container">
+            <!-- Input Form Card -->
+            <div class="form-card" id="formCard">
                 <div class="form-header">
                     <h1>🏀 <span>Shot Predictor Pro</span></h1>
                     <p>Powered by Advanced Machine Learning</p>
                     <div class="kobe-tribute">"Mamba Mentality" - Kobe Bryant</div>
                 </div>
 
-                <form action="/predict" method="POST" id="predictionForm">
+                <form id="predictionForm" method="POST">
                     <div class="form-grid">
                         <div class="input-group">
                             <label><i>🎯</i> Action Type</label>
-                            <input type="number" name="action_type" required placeholder="Enter action type" value="1">
+                            <input type="number" name="action_type" required placeholder="Enter encoded value" value="1">
+                            <small style="color: #666; font-size: 10px; margin-top: 5px;">Use encoded values (e.g., 1, 2, 3)</small>
                         </div>
 
                         <div class="input-group">
                             <label><i>🔫</i> Combined Shot Type</label>
-                            <input type="number" name="combined_shot_type" required placeholder="Enter combined shot type" value="1">
+                            <input type="number" name="combined_shot_type" required placeholder="Enter encoded value" value="1">
+                            <small style="color: #666; font-size: 10px; margin-top: 5px;">Use encoded values (e.g., 1, 2, 3)</small>
                         </div>
 
                         <div class="input-group">
@@ -514,8 +434,8 @@
                         <div class="input-group">
                             <label><i>🏆</i> Playoffs</label>
                             <select name="playoffs" required>
-                                <option value="0">Regular Season</option>
-                                <option value="1">Playoffs</option>
+                                <option value="0">Regular Season (0)</option>
+                                <option value="1">Playoffs (1)</option>
                             </select>
                         </div>
 
@@ -531,32 +451,38 @@
 
                         <div class="input-group">
                             <label><i>🎪</i> Shot Type</label>
-                            <input type="number" name="shot_type" required placeholder="Shot type code" value="1">
+                            <input type="number" name="shot_type" required placeholder="Encoded value" value="1">
+                            <small style="color: #666; font-size: 10px; margin-top: 5px;">Use encoded values (e.g., 1, 2, 3)</small>
                         </div>
 
                         <div class="input-group">
                             <label><i>🗺️</i> Shot Zone Area</label>
-                            <input type="number" name="shot_zone_area" required placeholder="Zone area code" value="1">
+                            <input type="number" name="shot_zone_area" required placeholder="Encoded value" value="1">
+                            <small style="color: #666; font-size: 10px; margin-top: 5px;">Use encoded values</small>
                         </div>
 
                         <div class="input-group">
                             <label><i>🎯</i> Shot Zone Basic</label>
-                            <input type="number" name="shot_zone_basic" required placeholder="Basic zone code" value="1">
+                            <input type="number" name="shot_zone_basic" required placeholder="Encoded value" value="1">
+                            <small style="color: #666; font-size: 10px; margin-top: 5px;">Use encoded values</small>
                         </div>
 
                         <div class="input-group">
                             <label><i>📊</i> Shot Zone Range</label>
-                            <input type="number" name="shot_zone_range" required placeholder="Range code" value="1">
+                            <input type="number" name="shot_zone_range" required placeholder="Encoded value" value="1">
+                            <small style="color: #666; font-size: 10px; margin-top: 5px;">Use encoded values</small>
                         </div>
 
                         <div class="input-group">
                             <label><i>👥</i> Matchup</label>
-                            <input type="number" name="matchup" required placeholder="Matchup code" value="1">
+                            <input type="number" name="matchup" required placeholder="Encoded value" value="1">
+                            <small style="color: #666; font-size: 10px; margin-top: 5px;">Use encoded values</small>
                         </div>
 
                         <div class="input-group">
                             <label><i>⚔️</i> Opponent</label>
-                            <input type="number" name="opponent" required placeholder="Opponent code" value="1">
+                            <input type="number" name="opponent" required placeholder="Encoded value" value="1">
+                            <small style="color: #666; font-size: 10px; margin-top: 5px;">Use encoded values</small>
                         </div>
 
                         <div class="input-group full-width">
@@ -571,122 +497,118 @@
                 </form>
             </div>
 
-            <!-- Right side - Result Card -->
-            <div class="result-card">
+            <!-- Result Card (Hidden initially) -->
+            <div class="result-card" id="resultCard">
                 <div class="result-header">
-                    <div class="basketball-icon">🏀</div>
-                    <h2>Prediction Result</h2>
+                    <h2>🎯 Prediction Result</h2>
                 </div>
-
-                <!-- Result Container (hidden by default, shows when prediction exists) -->
-                <div id="resultContainer" class="result-container {% if prediction_text %}show{% endif %}">
-                    {% if prediction_text %}
-                        {% if "Made" in prediction_text %}
-                            <div class="prediction-result make">
-                                <div class="prediction-text">🏆 SHOT MADE! 🏆</div>
-                                <div class="confidence">{{ prediction_text }}</div>
-                            </div>
-                            <div class="shot-visual">
-                                <div class="basketball-emoji make">🏀</div>
-                            </div>
-                        {% elif "Missed" in prediction_text %}
-                            <div class="prediction-result miss">
-                                <div class="prediction-text">💔 SHOT MISSED 💔</div>
-                                <div class="confidence">{{ prediction_text }}</div>
-                            </div>
-                            <div class="shot-visual">
-                                <div class="basketball-emoji miss">🏀</div>
-                            </div>
-                        {% else %}
-                            <div class="prediction-result placeholder">
-                                <div class="prediction-text">❌ ERROR</div>
-                                <div class="confidence">{{ prediction_text }}</div>
-                            </div>
-                            <div class="shot-visual">
-                                <div class="basketball-emoji">🏀</div>
-                            </div>
-                        {% endif %}
-                    {% else %}
-                        <!-- Empty state -->
-                        <div class="empty-state">
-                            <div class="basketball-emoji">🏀</div>
-                            <p>Enter shot parameters and click "Predict Shot Outcome" to see results</p>
-                        </div>
-                    {% endif %}
+                <div id="resultContent">
+                    <!-- Dynamic content will be inserted here -->
                 </div>
+                <button class="back-btn" id="backBtn">← Back to Input Form</button>
             </div>
-        </div>
-
-        <div class="footer">
-            <p>🏀 Powered by Machine Learning | Mamba Mentality | NBA Shot Analytics 🏀</p>
         </div>
     </div>
 
     <script>
-        // Create floating particles
-        function createParticles() {
-            const particleCount = 40;
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                const size = Math.random() * 5 + 2;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.animationDuration = `${Math.random() * 15 + 10}s`;
-                particle.style.animationDelay = `${Math.random() * 5}s`;
-                document.body.appendChild(particle);
-            }
-        }
+        const formCard = document.getElementById('formCard');
+        const resultCard = document.getElementById('resultCard');
+        const predictionForm = document.getElementById('predictionForm');
+        const predictBtn = document.getElementById('predictBtn');
+        const backBtn = document.getElementById('backBtn');
+        const resultContent = document.getElementById('resultContent');
 
-        // Handle form submission with loading state and show result
-        document.getElementById('predictionForm').addEventListener('submit', function(e) {
-            const btn = document.getElementById('predictBtn');
-            btn.classList.add('loading');
-            btn.textContent = ' Analyzing Shot...';
+        // Handle form submission
+        predictionForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
             
-            // Show loading in result container
-            const resultContainer = document.getElementById('resultContainer');
-            resultContainer.classList.add('show');
-            resultContainer.innerHTML = `
-                <div class="prediction-result placeholder">
-                    <div class="prediction-text">🤔 Analyzing Shot...</div>
-                    <div class="confidence">Processing your shot parameters</div>
-                </div>
-                <div class="shot-visual">
-                    <div class="basketball-emoji" style="animation: pulse 1s infinite;">🏀</div>
+            // Hide form card, show loading in result card
+            formCard.classList.add('hide');
+            resultCard.classList.add('show');
+            
+            // Show loading state
+            resultContent.innerHTML = `
+                <div class="loading-spinner">
+                    <div class="basketball-emoji">🏀</div>
+                    <h3 style="margin-top: 20px; color: #333;">Analyzing Shot...</h3>
+                    <p style="color: #666; margin-top: 10px;">Processing your shot parameters</p>
                 </div>
             `;
-        });
-
-        // Add animation to result when page loads with prediction
-        window.addEventListener('load', function() {
-            const result = document.querySelector('.prediction-result');
-            if (result && (result.classList.contains('make') || result.classList.contains('miss'))) {
-                // Trigger animation
-                const basketball = document.querySelector('.basketball-emoji');
-                if (basketball) {
-                    if (result.classList.contains('make')) {
-                        basketball.style.animation = 'swishEmoji 1s ease-out';
-                    } else if (result.classList.contains('miss')) {
-                        basketball.style.animation = 'bounceEmoji 0.8s ease-out';
-                    }
-                    
-                    // Remove animation after it completes
-                    setTimeout(() => {
-                        basketball.style.animation = '';
-                    }, 1000);
+            
+            // Collect form data
+            const formData = new FormData(predictionForm);
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const html = await response.text();
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                
+                // Extract prediction text from response
+                const resultDiv = tempDiv.querySelector('.result');
+                let predictionText = 'No prediction available';
+                if (resultDiv) {
+                    predictionText = resultDiv.textContent;
+                } else if (tempDiv.innerHTML.includes('Shot Made')) {
+                    predictionText = tempDiv.innerHTML.match(/Shot Made[^<]*/)?.[0] || '🏀 Shot Made';
+                } else if (tempDiv.innerHTML.includes('Shot Missed')) {
+                    predictionText = tempDiv.innerHTML.match(/Shot Missed[^<]*/)?.[0] || '❌ Shot Missed';
                 }
+                
+                // Display result based on prediction
+                const isMade = predictionText.includes('Made');
+                const confidence = predictionText.match(/\d+\.?\d*%/)?.[0] || '85%';
+                
+                resultContent.innerHTML = `
+                    <div class="prediction-result ${isMade ? 'make' : 'miss'}">
+                        <div class="prediction-text">${isMade ? '🏆 SHOT MADE! 🏆' : '💔 SHOT MISSED 💔'}</div>
+                        <div class="confidence">${predictionText}</div>
+                    </div>
+                    <div class="shot-visual">
+                        <div class="basketball-emoji">🏀</div>
+                    </div>
+                `;
+                
+                // Trigger animation
+                const basketball = resultContent.querySelector('.basketball-emoji');
+                if (basketball) {
+                    basketball.style.animation = 'none';
+                    setTimeout(() => {
+                        basketball.style.animation = 'bounce 1s ease-in-out';
+                    }, 10);
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                resultContent.innerHTML = `
+                    <div class="prediction-result miss">
+                        <div class="prediction-text">⚠️ ERROR</div>
+                        <div class="confidence">Failed to get prediction. Please try again.</div>
+                    </div>
+                    <div class="shot-visual">
+                        <div class="basketball-emoji">🏀</div>
+                    </div>
+                `;
             }
         });
-
-        // Create background particles
-        createParticles();
-
+        
+        // Back button functionality
+        backBtn.addEventListener('click', function() {
+            resultCard.classList.remove('show');
+            formCard.classList.remove('hide');
+            
+            // Reset form if needed (optional)
+            // predictionForm.reset();
+        });
+        
         // Log successful load
         console.log("✅ Basketball Shot Predictor UI Loaded Successfully!");
-        console.log("🎯 Kobe Bryant tribute background active");
-        console.log("📊 All 15 input fields are ready");
+        console.log("🎯 Kobe Bryant image on right side");
+        console.log("📊 Form hidden until prediction, result shown after");
     </script>
 </body>
 </html>
