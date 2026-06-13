@@ -16,11 +16,6 @@
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
-            background-image: url('static/images/kobe-bryant.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
         }
 
         /* Full background image with overlay */
@@ -31,6 +26,11 @@
             left: 0;
             right: 0;
             bottom: 0;
+            background-image: url('static/images/kobe-bryant.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             z-index: -2;
         }
 
@@ -81,7 +81,7 @@
         }
 
         .container {
-            max-width: 600px;
+            max-width: 650px;
             width: 100%;
             margin: 0;
         }
@@ -93,6 +93,22 @@
             padding: 35px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             transition: all 0.5s ease;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .form-card::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .form-card::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .form-card::-webkit-scrollbar-thumb {
+            background: #FF6B35;
+            border-radius: 10px;
         }
 
         .form-card.hide {
@@ -104,6 +120,10 @@
             margin-bottom: 30px;
             padding-bottom: 20px;
             border-bottom: 2px solid #FF6B35;
+            position: sticky;
+            top: 0;
+            background: rgba(255,255,255,0.98);
+            z-index: 10;
         }
 
         .form-header h1 {
@@ -180,12 +200,6 @@
 
         .input-group input:hover, .input-group select:hover {
             border-color: #FF8C42;
-        }
-
-        .input-group small {
-            color: #888;
-            font-size: 10px;
-            margin-top: 5px;
         }
 
         /* Predict button */
@@ -427,16 +441,79 @@
 
                 <form id="predictionForm" method="POST">
                     <div class="form-grid">
+                        <!-- Action Type Dropdown -->
                         <div class="input-group">
                             <label><i>🎯</i> Action Type</label>
-                            <input type="number" name="action_type" required placeholder="Enter encoded value" value="1">
-                            <small>Use encoded values (e.g., 1, 2, 3)</small>
+                            <select name="action_type" required>
+                                <option value="0">Alley Oop Dunk Shot</option>
+                                <option value="1">Alley Oop Layup shot</option>
+                                <option value="2">Cutting Layup Shot</option>
+                                <option value="3">Driving Bank shot</option>
+                                <option value="4">Driving Dunk Shot</option>
+                                <option value="5">Driving Finger Roll Layup Shot</option>
+                                <option value="6">Driving Finger Roll Shot</option>
+                                <option value="7">Driving Floating Bank Jump Shot</option>
+                                <option value="8">Driving Floating Jump Shot</option>
+                                <option value="9">Driving Hook Shot</option>
+                                <option value="10">Driving Jump shot</option>
+                                <option value="11">Driving Layup Shot</option>
+                                <option value="12">Driving Reverse Layup Shot</option>
+                                <option value="13">Driving Slam Dunk Shot</option>
+                                <option value="14">Dunk Shot</option>
+                                <option value="15">Fadeaway Bank shot</option>
+                                <option value="16">Fadeaway Jump Shot</option>
+                                <option value="17">Finger Roll Layup Shot</option>
+                                <option value="18">Finger Roll Shot</option>
+                                <option value="19">Floating Jump shot</option>
+                                <option value="20">Follow Up Dunk Shot</option>
+                                <option value="21">Hook Bank Shot</option>
+                                <option value="22">Hook Shot</option>
+                                <option value="23">Jump Bank Shot</option>
+                                <option value="24">Jump Hook Shot</option>
+                                <option value="25">Jump Shot</option>
+                                <option value="26">Layup Shot</option>
+                                <option value="27">Pullup Bank shot</option>
+                                <option value="28">Pullup Jump shot</option>
+                                <option value="29">Putback Dunk Shot</option>
+                                <option value="30">Putback Layup Shot</option>
+                                <option value="31">Putback Slam Dunk Shot</option>
+                                <option value="32">Reverse Dunk Shot</option>
+                                <option value="33">Reverse Layup Shot</option>
+                                <option value="34">Reverse Slam Dunk Shot</option>
+                                <option value="35">Running Bank shot</option>
+                                <option value="36">Running Dunk Shot</option>
+                                <option value="37">Running Finger Roll Layup Shot</option>
+                                <option value="38">Running Finger Roll Shot</option>
+                                <option value="39">Running Hook Shot</option>
+                                <option value="40">Running Jump Shot</option>
+                                <option value="41">Running Layup Shot</option>
+                                <option value="42">Running Pull-Up Jump Shot</option>
+                                <option value="43">Running Reverse Layup Shot</option>
+                                <option value="44">Running Slam Dunk Shot</option>
+                                <option value="45">Running Tip Shot</option>
+                                <option value="46">Slam Dunk Shot</option>
+                                <option value="47">Step Back Jump shot</option>
+                                <option value="48">Tip Layup Shot</option>
+                                <option value="49">Tip Shot</option>
+                                <option value="50">Turnaround Bank shot</option>
+                                <option value="51">Turnaround Fadeaway shot</option>
+                                <option value="52">Turnaround Finger Roll Shot</option>
+                                <option value="53">Turnaround Hook Shot</option>
+                                <option value="54">Turnaround Jump Shot</option>
+                            </select>
                         </div>
 
+                        <!-- Combined Shot Type Dropdown -->
                         <div class="input-group">
                             <label><i>🔫</i> Combined Shot Type</label>
-                            <input type="number" name="combined_shot_type" required placeholder="Enter encoded value" value="1">
-                            <small>Use encoded values (e.g., 1, 2, 3)</small>
+                            <select name="combined_shot_type" required>
+                                <option value="0">Bank Shot</option>
+                                <option value="1">Dunk</option>
+                                <option value="2">Hook Shot</option>
+                                <option value="3">Jump Shot</option>
+                                <option value="4">Layup</option>
+                                <option value="5">Tip Shot</option>
+                            </select>
                         </div>
 
                         <div class="input-group">
@@ -457,14 +534,36 @@
                         <div class="input-group">
                             <label><i>🏆</i> Playoffs</label>
                             <select name="playoffs" required>
-                                <option value="0">Regular Season (0)</option>
-                                <option value="1">Playoffs (1)</option>
+                                <option value="0">Regular Season</option>
+                                <option value="1">Playoffs</option>
                             </select>
                         </div>
 
+                        <!-- Season Dropdown -->
                         <div class="input-group">
                             <label><i>📅</i> Season</label>
-                            <input type="number" name="season" required placeholder="Year" value="2023">
+                            <select name="season" required>
+                                <option value="0">1996-97</option>
+                                <option value="1">1997-98</option>
+                                <option value="2">1998-99</option>
+                                <option value="3">1999-00</option>
+                                <option value="4">2000-01</option>
+                                <option value="5">2001-02</option>
+                                <option value="6">2002-03</option>
+                                <option value="7">2003-04</option>
+                                <option value="8">2004-05</option>
+                                <option value="9">2005-06</option>
+                                <option value="10">2006-07</option>
+                                <option value="11">2007-08</option>
+                                <option value="12">2008-09</option>
+                                <option value="13">2009-10</option>
+                                <option value="14">2010-11</option>
+                                <option value="15">2011-12</option>
+                                <option value="16">2012-13</option>
+                                <option value="17">2013-14</option>
+                                <option value="18">2014-15</option>
+                                <option value="19">2015-16</option>
+                            </select>
                         </div>
 
                         <div class="input-group">
@@ -472,40 +571,167 @@
                             <input type="number" name="shot_distance" required placeholder="Distance in feet" value="15">
                         </div>
 
+                        <!-- Shot Type Dropdown -->
                         <div class="input-group">
                             <label><i>🎪</i> Shot Type</label>
-                            <input type="number" name="shot_type" required placeholder="Encoded value" value="1">
-                            <small>Use encoded values (e.g., 1, 2, 3)</small>
+                            <select name="shot_type" required>
+                                <option value="0">2PT Field Goal</option>
+                                <option value="1">3PT Field Goal</option>
+                            </select>
                         </div>
 
+                        <!-- Shot Zone Area Dropdown -->
                         <div class="input-group">
                             <label><i>🗺️</i> Shot Zone Area</label>
-                            <input type="number" name="shot_zone_area" required placeholder="Encoded value" value="1">
-                            <small>Use encoded values</small>
+                            <select name="shot_zone_area" required>
+                                <option value="0">Back Court(BC)</option>
+                                <option value="1">Center(C)</option>
+                                <option value="2">Left Side Center(LC)</option>
+                                <option value="3">Left Side(L)</option>
+                                <option value="4">Right Side Center(RC)</option>
+                                <option value="5">Right Side(R)</option>
+                            </select>
                         </div>
 
+                        <!-- Shot Zone Basic Dropdown -->
                         <div class="input-group">
                             <label><i>🎯</i> Shot Zone Basic</label>
-                            <input type="number" name="shot_zone_basic" required placeholder="Encoded value" value="1">
-                            <small>Use encoded values</small>
+                            <select name="shot_zone_basic" required>
+                                <option value="0">Above the Break 3</option>
+                                <option value="1">Backcourt</option>
+                                <option value="2">In The Paint (Non-RA)</option>
+                                <option value="3">Left Corner 3</option>
+                                <option value="4">Mid-Range</option>
+                                <option value="5">Restricted Area</option>
+                                <option value="6">Right Corner 3</option>
+                            </select>
                         </div>
 
+                        <!-- Shot Zone Range Dropdown -->
                         <div class="input-group">
                             <label><i>📊</i> Shot Zone Range</label>
-                            <input type="number" name="shot_zone_range" required placeholder="Encoded value" value="1">
-                            <small>Use encoded values</small>
+                            <select name="shot_zone_range" required>
+                                <option value="0">16-24 ft.</option>
+                                <option value="1">24+ ft.</option>
+                                <option value="2">8-16 ft.</option>
+                                <option value="3">Back Court Shot</option>
+                                <option value="4">Less Than 8 ft.</option>
+                            </select>
                         </div>
 
+                        <!-- Matchup Dropdown -->
                         <div class="input-group">
                             <label><i>👥</i> Matchup</label>
-                            <input type="number" name="matchup" required placeholder="Encoded value" value="1">
-                            <small>Use encoded values</small>
+                            <select name="matchup" required>
+                                <option value="0">LAL @ ATL</option>
+                                <option value="1">LAL @ BKN</option>
+                                <option value="2">LAL @ BOS</option>
+                                <option value="3">LAL @ CHA</option>
+                                <option value="4">LAL @ CHH</option>
+                                <option value="5">LAL @ CHI</option>
+                                <option value="6">LAL @ CLE</option>
+                                <option value="7">LAL @ DAL</option>
+                                <option value="8">LAL @ DEN</option>
+                                <option value="9">LAL @ DET</option>
+                                <option value="10">LAL @ GSW</option>
+                                <option value="11">LAL @ HOU</option>
+                                <option value="12">LAL @ IND</option>
+                                <option value="13">LAL @ LAC</option>
+                                <option value="14">LAL @ MEM</option>
+                                <option value="15">LAL @ MIA</option>
+                                <option value="16">LAL @ MIL</option>
+                                <option value="17">LAL @ MIN</option>
+                                <option value="18">LAL @ NJN</option>
+                                <option value="19">LAL @ NOH</option>
+                                <option value="20">LAL @ NOP</option>
+                                <option value="21">LAL @ NYK</option>
+                                <option value="22">LAL @ OKC</option>
+                                <option value="23">LAL @ ORL</option>
+                                <option value="24">LAL @ PHI</option>
+                                <option value="25">LAL @ PHX</option>
+                                <option value="26">LAL @ POR</option>
+                                <option value="27">LAL @ SAC</option>
+                                <option value="28">LAL @ SAS</option>
+                                <option value="29">LAL @ SEA</option>
+                                <option value="30">LAL @ TOR</option>
+                                <option value="31">LAL @ UTA</option>
+                                <option value="32">LAL @ VAN</option>
+                                <option value="33">LAL @ WAS</option>
+                                <option value="34">LAL vs. ATL</option>
+                                <option value="35">LAL vs. BKN</option>
+                                <option value="36">LAL vs. BOS</option>
+                                <option value="37">LAL vs. CHA</option>
+                                <option value="38">LAL vs. CHH</option>
+                                <option value="39">LAL vs. CHI</option>
+                                <option value="40">LAL vs. CLE</option>
+                                <option value="41">LAL vs. DAL</option>
+                                <option value="42">LAL vs. DEN</option>
+                                <option value="43">LAL vs. DET</option>
+                                <option value="44">LAL vs. GSW</option>
+                                <option value="45">LAL vs. HOU</option>
+                                <option value="46">LAL vs. IND</option>
+                                <option value="47">LAL vs. LAC</option>
+                                <option value="48">LAL vs. MEM</option>
+                                <option value="49">LAL vs. MIA</option>
+                                <option value="50">LAL vs. MIL</option>
+                                <option value="51">LAL vs. MIN</option>
+                                <option value="52">LAL vs. NJN</option>
+                                <option value="53">LAL vs. NOH</option>
+                                <option value="54">LAL vs. NOP</option>
+                                <option value="55">LAL vs. NYK</option>
+                                <option value="56">LAL vs. OKC</option>
+                                <option value="57">LAL vs. ORL</option>
+                                <option value="58">LAL vs. PHI</option>
+                                <option value="59">LAL vs. PHX</option>
+                                <option value="60">LAL vs. POR</option>
+                                <option value="61">LAL vs. SAC</option>
+                                <option value="62">LAL vs. SAS</option>
+                                <option value="63">LAL vs. SEA</option>
+                                <option value="64">LAL vs. TOR</option>
+                                <option value="65">LAL vs. UTA</option>
+                                <option value="66">LAL vs. VAN</option>
+                                <option value="67">LAL vs. WAS</option>
+                            </select>
                         </div>
 
+                        <!-- Opponent Dropdown -->
                         <div class="input-group">
                             <label><i>⚔️</i> Opponent</label>
-                            <input type="number" name="opponent" required placeholder="Encoded value" value="1">
-                            <small>Use encoded values</small>
+                            <select name="opponent" required>
+                                <option value="0">ATL</option>
+                                <option value="1">BKN</option>
+                                <option value="2">BOS</option>
+                                <option value="3">CHA</option>
+                                <option value="4">CHI</option>
+                                <option value="5">CLE</option>
+                                <option value="6">DAL</option>
+                                <option value="7">DEN</option>
+                                <option value="8">DET</option>
+                                <option value="9">GSW</option>
+                                <option value="10">HOU</option>
+                                <option value="11">IND</option>
+                                <option value="12">LAC</option>
+                                <option value="13">MEM</option>
+                                <option value="14">MIA</option>
+                                <option value="15">MIL</option>
+                                <option value="16">MIN</option>
+                                <option value="17">NJN</option>
+                                <option value="18">NOH</option>
+                                <option value="19">NOP</option>
+                                <option value="20">NYK</option>
+                                <option value="21">OKC</option>
+                                <option value="22">ORL</option>
+                                <option value="23">PHI</option>
+                                <option value="24">PHX</option>
+                                <option value="25">POR</option>
+                                <option value="26">SAC</option>
+                                <option value="27">SAS</option>
+                                <option value="28">SEA</option>
+                                <option value="29">TOR</option>
+                                <option value="30">UTA</option>
+                                <option value="31">VAN</option>
+                                <option value="32">WAS</option>
+                            </select>
                         </div>
 
                         <div class="input-group full-width">
@@ -593,9 +819,11 @@
                 if (resultDiv) {
                     predictionText = resultDiv.textContent;
                 } else if (tempDiv.innerHTML.includes('Shot Made')) {
-                    predictionText = tempDiv.innerHTML.match(/Shot Made[^<]*/)?.[0] || '🏀 Shot Made';
+                    const match = tempDiv.innerHTML.match(/Shot Made[^<]*/);
+                    predictionText = match ? match[0] : '🏀 Shot Made';
                 } else if (tempDiv.innerHTML.includes('Shot Missed')) {
-                    predictionText = tempDiv.innerHTML.match(/Shot Missed[^<]*/)?.[0] || '❌ Shot Missed';
+                    const match = tempDiv.innerHTML.match(/Shot Missed[^<]*/);
+                    predictionText = match ? match[0] : '❌ Shot Missed';
                 }
                 
                 // Display result based on prediction
@@ -646,7 +874,7 @@
         // Log successful load
         console.log("✅ Basketball Shot Predictor UI Loaded Successfully!");
         console.log("🎯 Kobe Bryant full background active");
-        console.log("📊 Cards on left side with hide/show functionality");
+        console.log("📊 All categorical fields now use dropdowns with readable names");
     </script>
 </body>
 </html>
