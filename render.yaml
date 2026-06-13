@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: basketball-shot-predictor
+    runtime: python
+    repo: https://github.com/yourusername/your-repo
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.0
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    healthCheckPath: /api/status
+    autoDeploy: true
